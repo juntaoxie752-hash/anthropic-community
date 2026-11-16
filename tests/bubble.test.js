@@ -12,11 +12,12 @@ test('bubble migration preserves purchases; repeatable influencers, exponential 
   await db.exec(await readFile(new URL('../supabase/006_hype_shop.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../supabase/007_workforce_funding.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../supabase/008_production_upgrades.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/009_deepseek_pricing.sql',import.meta.url),'utf8'));
   const call=async(action,payload={},visitor='alice')=>(await db.query('select public.community_bubble($1,$2,$3,$4) as data',[action,visitor,visitor,JSON.stringify({requestId:crypto.randomUUID(),...payload})])).rows[0].data;
   let s=await call('bubble_state',{},'legacy');
   assert.equal(s.player.arr,10000);assert.equal(s.player.slop,17);assert.equal(s.player.contributed,50000);assert.equal(s.world.contributed,50000);
   assert.equal(s.player.influencers,1);assert.equal(s.player.saleMultiplier,2);assert.equal(s.player.capacity,100);assert.equal(s.player.auto,3);
-  assert.equal(s.player.visitor,undefined);assert.equal(s.player.roundFunding,3500);assert.equal(s.world.economyVersion,4);
+  assert.equal(s.player.visitor,undefined);assert.equal(s.player.roundFunding,3500);assert.equal(s.world.economyVersion,5);
   s=await call('bubble_state');assert.equal(s.player.roundFunding,0);assert.equal(s.player.fundingLabel,'Seed');assert.equal(s.player.capacity,10);assert.equal(s.shop.fundingCost,3500);
   await assert.rejects(call('bubble_buy_double'),/Not enough/);
   await db.exec("update community.bubble_players set arr=100000000 where visitor='alice'");

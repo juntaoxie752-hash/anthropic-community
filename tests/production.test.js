@@ -7,7 +7,7 @@ import worker from '../src/worker.js';
 async function setup() {
  const db = new PGlite();
  await db.exec('create role anon; create role authenticated; create role service_role;');
- for (const file of ['schema.sql','005_bubble_baseline.sql','006_hype_shop.sql','007_workforce_funding.sql','008_production_upgrades.sql']) {
+ for (const file of ['schema.sql','005_bubble_baseline.sql','006_hype_shop.sql','007_workforce_funding.sql','008_production_upgrades.sql','009_deepseek_pricing.sql']) {
   await db.exec(await readFile(new URL('../supabase/'+file,import.meta.url),'utf8'));
  }
  const call = async (action, payload = {}, visitor = 'factory') => (await db.query(
@@ -38,11 +38,11 @@ test('data centers stack with chips; algorithm compounds, preserves partial cycl
   await db.exec("update community.bubble_players set slop=0,auto_accrued_at=now()-interval '8 seconds' where visitor='factory'");
   s = await call('bubble_buy_algorithm');
   assert.equal(s.player.slop,258);assert.equal(s.player.productionInterval,4);
-  assert.equal(s.shop.algorithmCost,7000);assert.equal(s.player.arr,cash-3500);
+  assert.equal(s.shop.algorithmCost,700000);assert.equal(s.player.arr,cash-350000);
   const age=(await db.query("select extract(epoch from now()-auto_accrued_at)::float as age from community.bubble_players where visitor='factory'")).rows[0].age;
   assert.equal(age,2.4);
   await db.exec('commit');
-  s = await call('bubble_buy_algorithm');assert.equal(s.player.productionInterval,3.2);assert.equal(s.shop.algorithmCost,14000);
+  s = await call('bubble_buy_algorithm');assert.equal(s.player.productionInterval,3.2);assert.equal(s.shop.algorithmCost,1400000);
   assert.equal(s.world.contributed,contribution);
   await db.exec("update community.bubble_players set slop=0,auto_accrued_at=now()-interval '6.5 seconds' where visitor='factory'");
   s = await call('bubble_state');assert.equal(s.player.slop,516);

@@ -1,0 +1,2 @@
+DeepSeek vector silhouette adapted from Lobe Icons: https://github.com/lobehub/lobe-icons/tree/master/packages/static-svg/icons/deepseek.svg
+MIT license in deepseek-LICENSE.txt. Brand color #4D6BFE matches the supplied reference.

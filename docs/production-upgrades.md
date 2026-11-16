@@ -7,7 +7,7 @@ The production shop and backend now include the following permanent upgrades. Al
 | NVIDIA B300 Cluster | $1,400 per chip | One slop per production cycle |
 | Data Center | $179,200 each | 128 additional B300 chips; 128 slop per cycle |
 | AI native workspace | $7,000, once | Replace the one-slop click with a server-generated roll |
-| DeepSeek Mystery Algorithm | $3,500 × 2^current level | Multiply the production interval by 0.8 per purchase |
+| DeepSeek Mystery Algorithm | $350,000 × 2^current level | Multiply the production interval by 0.8 per purchase |
 
 A fleet's cycle starts at five seconds. After two algorithm purchases it is 3.2 seconds. Algorithm upgrades apply to all current and future individual chips and data centers. Level 40 is the numeric guardrail; the shop disables further purchases there. UI refresh is limited to at most once a second for fast fleets, but server accrual uses the actual interval. Decorative animation runs no faster than a half-second cycle.
 
@@ -31,3 +31,7 @@ New same-origin POST routes: `/api/bubble_buy_center`, `/api/bubble_buy_workspac
 A purchase first settles existing production at the old interval. Algorithm purchases preserve partial cycle progress proportionally. Adding hardware starts a fresh cycle so new chips cannot earn retroactively. Full bowls do not bank overflow. Upgrades do not add to global contribution; only sales do.
 
 `npm test` covers migration preservation, purchase accounting, stacked production, weighted random rolls, overflow, replay protection, API origin/method enforcement, and front-end purchase/effect rendering. The front-end tests also ensure an old background response cannot overwrite a newer purchase.
+
+## Pricing and visual revision
+
+Migration 009 raises only the DeepSeek base cost to $350,000 (still doubles each level); existing purchases remain intact. Apply once after 008. Workspace results use borderless floating Oxanium numbers with Space Mono labels, both self-hosted under SIL OFL. The blue DeepSeek silhouette is an SVG adapted from Lobe Icons (MIT).
