@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs><linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdfaf5"/><stop offset="1" stop-color="#d9ccba"/></linearGradient>
+  <linearGradient id="gd2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe1a0"/><stop offset="1" stop-color="#d7a441"/></linearGradient></defs>
+  <g transform="translate(6 8) scale(.62)">
+    <rect x="4" y="4" width="44" height="34" rx="7" fill="url(#pg2)" stroke="#c9b9a4" stroke-width="3"/>
+    <path d="M14 40 h56 a5 5 0 0 1 5 5 c0 17 -12 25 -19 28 l2 8 a5 5 0 0 1 -5 6 h-14 a5 5 0 0 1 -5 -6 l2 -8 c-7 -3 -19 -11 -19 -28 a5 5 0 0 1 5 -5z" fill="url(#pg2)" stroke="#c9b9a4" stroke-width="3"/>
+    <ellipse cx="42" cy="45" rx="26" ry="8" fill="#fdfaf5" stroke="#c9b9a4" stroke-width="3"/>
+    <ellipse cx="42" cy="46" rx="18" ry="4.5" fill="#79b8b0"/>
+  </g>
+  <g transform="translate(30 30) scale(.62)">
+    <rect x="4" y="4" width="44" height="34" rx="7" fill="url(#pg2)" stroke="#b1744f" stroke-width="3"/>
+    <path d="M14 40 h56 a5 5 0 0 1 5 5 c0 17 -12 25 -19 28 l2 8 a5 5 0 0 1 -5 6 h-14 a5 5 0 0 1 -5 -6 l2 -8 c-7 -3 -19 -11 -19 -28 a5 5 0 0 1 5 -5z" fill="url(#pg2)" stroke="#b1744f" stroke-width="3"/>
+    <ellipse cx="42" cy="45" rx="26" ry="8" fill="#fdfaf5" stroke="#b1744f" stroke-width="3"/>
+    <ellipse cx="42" cy="46" rx="18" ry="4.5" fill="url(#gd2)"/>
+  </g>
+  <text x="14" y="24" font-family="Arial Black,Arial" font-size="21" font-weight="900" fill="url(#gd2)" stroke="#7a4d12" stroke-width=".8">2×</text>
+</svg>

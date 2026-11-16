@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs><linearGradient id="gd3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe1a0"/><stop offset="1" stop-color="#d7a441"/></linearGradient>
+  <linearGradient id="mtl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8e2d6"/><stop offset="1" stop-color="#a89e8d"/></linearGradient></defs>
+  <!-- funnel machine -->
+  <path d="M20 14 h56 l-16 26 h-24 z" fill="url(#mtl)" stroke="#7d7466" stroke-width="2.4" stroke-linejoin="round"/>
+  <rect x="41" y="40" width="14" height="12" rx="3" fill="url(#mtl)" stroke="#7d7466" stroke-width="2.4"/>
+  <!-- hopper label asterisk (the logo being fed) -->
+  <g stroke="#e58b68" stroke-width="4" stroke-linecap="round"><path d="M48 18 v12 M41.5 22 l13 8 M54.5 22 l-13 8"/></g>
+  <!-- conveyor -->
+  <rect x="14" y="66" width="68" height="12" rx="6" fill="#3a332c" stroke="#221d18" stroke-width="2"/>
+  <circle cx="26" cy="72" r="3" fill="#7d7466"/><circle cx="48" cy="72" r="3" fill="#7d7466"/><circle cx="70" cy="72" r="3" fill="#7d7466"/>
+  <!-- poop drops -->
+  <path d="M48 50 c-3 4 -6 5 -6 9 a6 6 0 0 0 12 0 c0 -4 -3 -5 -6 -9z" fill="#8a5a3f" stroke="#59331d" stroke-width="2"/>
+  <path d="M30 78 c-2.4 3.4 -5 4.4 -5 7.4 a5 5 0 0 0 10 0 c0 -3 -2.6 -4 -5 -7.4z" fill="#8a5a3f" stroke="#59331d" stroke-width="2"/>
+  <path d="M66 78 c-2.4 3.4 -5 4.4 -5 7.4 a5 5 0 0 0 10 0 c0 -3 -2.6 -4 -5 -7.4z" fill="#8a5a3f" stroke="#59331d" stroke-width="2"/>
+  <path d="M80 8 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8z" fill="url(#gd3)"/>
+</svg>
