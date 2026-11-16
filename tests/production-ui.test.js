@@ -15,7 +15,7 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
    player:{slop:60,capacity:100000,arr:1000000,contributed:3000000,auto:30,influencers:6,saleMultiplier:7,
     fundingRound:4,fundingLabel:'Series C',roundFunding:1792000,dataCenters:0,totalChips:30,workspace:false,algorithmLevel:0,productionInterval:5},
    world:{contributed:0,burst:false},
-   shop:{influencerCost:134400,fundingCost:57344000,nextCapacity:1000000,nextRound:'Series D',centerCost:179200,workspaceCost:7000,algorithmCost:350000,nextInterval:4},
+   shop:{autoCost:1400,autoLimit:64,centerLimit:32,influencerCost:134400,fundingCost:57344000,nextCapacity:1000000,nextRound:'Series D',centerCost:179200,workspaceCost:7000,algorithmCost:350000,nextInterval:4},
    produced:0,rolled:0,rollTier:null,duplicate:false,overflow:0
   };
   let forcedRoll=900, pendingRead, resolveRead, holdWrite, releaseWrite, failWrite=false, loseResponse=false;

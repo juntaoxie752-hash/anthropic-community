@@ -26,7 +26,6 @@ function flashStatus(message) {
 }
 const GOAL = 1_400_000_000_000n;
 const RATE = 70n;
-const SHOP = { auto: 1400n };
 // User-selected Thursday target. 14:30 UTC is a game scheduling assumption, not a confirmed first-trade time.
 const ipoDate = new Date('2026-11-19T14:30:00Z');
 
@@ -77,7 +76,8 @@ function showWorldEvent(event, replay = false) {
   dialog.querySelector('.world-event-art').textContent = event.icon || '🏢💥';
   dialog.querySelector('.world-event-impact').textContent = event.effect || 'Shared AI Bubble valuation';
   dialog.querySelector('.world-event-disclaimer').textContent = event.disclaimer || 'Game satire, not a real-world news report. Your cash, upgrades and lifetime contribution are unchanged.';
-  $('world-event-loss').textContent = `−${money(event.loss)}`;
+  $('world-event-loss').textContent = event.displayValue || `−${money(event.loss)}`;
+  $('world-event-loss').classList.toggle('is-text', !!event.displayValue);
   $('world-event-values').textContent = `${money(event.before)} → ${money(event.after)}`;
   dialog.addEventListener('close', () => {try {localStorage.setItem(key, '1');} catch {}}, {once:true});
   $('world-event-close').onclick = () => dialog.close();
@@ -130,24 +130,26 @@ function render(next) {
   doubleBtn.querySelector('span').textContent = `Owned ×${influencers} · ${multiplier}× sale value. Each hire adds +1×.`;
   doubleBtn.querySelector('em').textContent = influencerMaxed ? 'Roster complete' : `Hire another · ${exact(influencerCost)}`;
   const autoBtn = $('buy-auto');
-  autoBtn.disabled = !ready || busy || arr < SHOP.auto;
+  const autoCost = next.shop?.autoCost ?? next.world.autoCost;
+  const autoMaxed = next.player.auto >= (next.shop?.autoLimit ?? 64);
+  autoBtn.disabled = !ready || busy || autoMaxed || autoCost == null || arr < BigInt(autoCost);
+  autoBtn.classList.toggle('owned', autoMaxed);
   const interval = next.player.productionInterval ?? 5;
   autoBtn.querySelector('span').textContent = `+1 slop / ${formatInterval(interval)}, hands-free.`;
-  autoBtn.querySelector('em').textContent = next.player.auto > 0
-    ? `Owned ×${next.player.auto} · buy again ${exact(SHOP.auto)}`
-    : `Stackable · ${exact(SHOP.auto)}`;
+  autoBtn.querySelector('em').textContent = autoMaxed ? 'Chip limit reached · 64 / 64'
+    : autoCost == null ? 'Loading price…' : `Owned ${next.player.auto} / 64 · ${exact(autoCost)} · +50% next purchase`;
   for (const [id, cost, owned, label] of [
-    ['buy-center', next.shop?.centerCost, false, `Owned ×${next.player.dataCenters ?? 0} · build another`],
+    ['buy-center', next.shop?.centerCost, (next.player.dataCenters ?? 0) >= (next.shop?.centerLimit ?? 32), `Owned ${next.player.dataCenters ?? 0} / 32 · build another`],
     ['buy-workspace', next.shop?.workspaceCost, !!next.player.workspace, 'Permanent'],
     ['buy-algorithm', next.shop?.algorithmCost, (next.player.algorithmLevel ?? 0) >= 40, `Level ${next.player.algorithmLevel ?? 0} · upgrade`],
   ]) {
     const button = $(id);
     button.disabled = !ready || busy || owned || cost == null || arr < BigInt(cost);
     button.classList.toggle('owned', owned);
-    button.querySelector('em').textContent = owned ? (id === 'buy-workspace' ? 'Owned · active' : 'Fully optimized')
+    button.querySelector('em').textContent = owned ? (id === 'buy-workspace' ? 'Owned · active' : id === 'buy-center' ? 'Data center limit reached · 32 / 32' : 'Fully optimized')
       : cost == null ? 'Loading price…' : `${label} · ${exact(cost)}`;
   }
-  $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Includes all DeepSeek upgrades.`;
+  $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Price doubles each purchase. Includes DeepSeek upgrades.`;
   $('buy-algorithm').querySelector('span').textContent = next.shop?.nextInterval == null
     ? `All B300 chips and data centers: ${formatInterval(interval)} per cycle.`
     : `All B300 chips & data centers: ${formatInterval(interval)} → ${formatInterval(next.shop.nextInterval)}. 20% shorter every level. Price doubles.`;

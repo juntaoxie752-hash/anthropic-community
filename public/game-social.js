@@ -49,7 +49,7 @@ $('open-events').onclick=async()=>{
    const date=document.createElement('time');date.dateTime=event.occurredAt;
    date.textContent=new Date(event.occurredAt).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
    const title=document.createElement('strong');title.textContent=event.title||'Data center down. Bubble deflated.';
-   const impact=document.createElement('span');impact.textContent=`−${dollars(event.loss)} · View event`;
+   const impact=document.createElement('span');impact.textContent=`${event.historyImpact || `−${dollars(event.loss)}`} · View event`;
    button.append(date,title,impact);
    button.onclick=()=>{$('events-dialog').close();document.dispatchEvent(new CustomEvent('replay-world-event',{detail:event}));};
    $('event-history').append(button);

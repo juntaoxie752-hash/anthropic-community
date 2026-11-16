@@ -327,3 +327,5 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 @media(max-width:420px){.community-panel{padding:20px 14px}.leaderboard-table{font-size:11px}.game-small-button{padding:8px 12px}}
 
 .production-outage{margin:6px auto;padding:8px 12px;border:1px solid #8b583b;border-radius:8px;background:#35231b;color:#ffbd92;font-size:12px;line-height:1.4;max-width:600px}.production-outage[hidden]{display:none}
+
+.world-event-loss.is-text{font-size:clamp(36px,10vw,58px);letter-spacing:-.04em}

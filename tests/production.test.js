@@ -204,3 +204,32 @@ test('global outage resets valuation once, preserves players and stops all autom
   assert.equal((await db.query("select count(*)::int n from community.bubble_events where id='microsoft-outage-2026-11-16'")).rows[0].n,1);
  } finally {await db.close();}
 });
+
+
+test('Neo Cloud resets compute once, resumes production and enforces escalating prices and fleet limits', async () => {
+ const {db,call}=await setup();
+ try {
+  await call('bubble_state');
+  for(const f of ['012_datacenter_event.sql','014_leaderboard_events.sql','015_funding_prices.sql','016_global_outage.sql'])await db.exec(await readFile(new URL('../supabase/'+f,import.meta.url),'utf8'));
+  await db.exec("update community.bubble_players set auto=10,data_centers=3,arr=10000000,slop=7,contributed=123,workspace=true,algorithm_level=2,influencers=3,funding_round=2,capacity=1000,display_name='Keep Me',auto_accrued_at=now()-interval '1 day' where visitor='factory'");
+  const sql=await readFile(new URL('../supabase/017_neo_cloud.sql',import.meta.url),'utf8');await db.exec(sql);
+  let s=await call('bubble_state');
+  assert.equal(s.player.auto,0);assert.equal(s.player.dataCenters,0);assert.equal(s.world.autoPaused,false);
+  assert.equal(s.player.arr,10000000);assert.equal(s.player.slop,7);assert.equal(s.player.contributed,123);
+  assert.equal(s.player.workspace,true);assert.equal(s.player.algorithmLevel,2);assert.equal(s.player.influencers,3);assert.equal(s.player.fundingRound,2);
+  assert.equal((await db.query("select display_name from community.bubble_players where visitor='factory'")).rows[0].display_name,'Keep Me');
+  assert.equal(s.shop.autoCost,1400);assert.equal(s.shop.centerCost,179200);
+  const rid=crypto.randomUUID();s=await call('bubble_buy_auto',{requestId:rid});assert.equal(s.player.arr,9998600);assert.equal(s.shop.autoCost,2100);
+  s=await call('bubble_buy_auto',{requestId:rid});assert.equal(s.player.auto,1);assert.equal(s.player.arr,9998600);
+  s=await call('bubble_buy_auto');assert.equal(s.shop.autoCost,3150);
+  s=await call('bubble_buy_center');assert.equal(s.shop.centerCost,358400);
+  const cash=s.player.arr;s=await call('bubble_buy_center');assert.equal(s.player.arr,cash-358400);assert.equal(s.shop.centerCost,716800);
+  await db.exec(sql);s=await call('bubble_state');assert.equal(s.player.auto,2);assert.equal(s.player.dataCenters,2);
+  await db.exec("update community.bubble_players set slop=0,auto_accrued_at=now()-interval '3.3 seconds' where visitor='factory'");
+  s=await call('bubble_state');assert.equal(s.player.slop,258);
+  await db.exec("update community.bubble_players set auto=64,data_centers=32 where visitor='factory'");
+  s=await call('bubble_state');assert.equal(s.shop.autoCost,null);assert.equal(s.shop.centerCost,null);
+  await assert.rejects(call('bubble_buy_auto'),/Chip limit/);await assert.rejects(call('bubble_buy_center'),/Data center limit/);
+  assert.equal((await db.query("select count(*)::int n from community.bubble_events where id='neo-cloud-implosion-2026-11-16'")).rows[0].n,1);
+ } finally {await db.close();}
+});
