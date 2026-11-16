@@ -1,5 +1,7 @@
 # Anthropic community
 
+> 2026-11-16：泡沫游戏已上线，最新生产商店规则与迁移见 [Production upgrades](docs/production-upgrades.md)。以下旧状态说明为历史记录。
+
 > 项目接手入口：[项目全量上下文与新游戏规划](docs/project-context-and-game-plan.md)。新版游戏目前只做方案，旧游戏已撤下；本文件下方包含历史发布记录，请以接手文档的状态区分为准。
 
 同一套前端与 Cloudflare Worker API，两个域名共用 Supabase 数据。首屏根据用户提供的截图调整，评论区位于第二屏。

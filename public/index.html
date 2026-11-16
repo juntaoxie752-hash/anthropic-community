@@ -32,7 +32,7 @@
           <div class="mini-progress" aria-label="Shared bubble progress toward $1.4T">
             <div class="mini-progress-copy"><span>AI Bubble</span><strong id="bubble-progress">$0 / $1.4T</strong></div>
             <div class="mini-progress-track" id="bubble-shell" data-stage="forming" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Shared bubble progress"><span id="bubble-fill"></span></div>
-            <p class="slop-saas-banner">Generate AI slops and sell them as SaaS</p>
+            <p class="slop-saas-banner">Generate AI slops and sell them as Super Intelligence</p>
             <span class="mini-progress-note" id="bubble-countdown" hidden></span>
           </div>
 
@@ -49,9 +49,14 @@
                 <button class="upgrade-open" id="open-production-shop" type="button" aria-haspopup="dialog" aria-controls="production-shop">Upgrade</button>
               </div>
               <section class="work-status chip-status" id="chip-workshop" data-mode="empty" aria-label="NVIDIA chip workforce">
-                <div class="worker-art chip-rig" id="chip-rig" aria-hidden="true"></div>
+                <div class="compute-fleet" id="compute-fleet">
+                  <div class="worker-art chip-rig" id="chip-rig" aria-hidden="true"></div>
+                  <div class="data-center-art" id="data-center-art" hidden aria-hidden="true"><img src="/assets/data-center.svg" alt=""><b id="data-center-badge">×1</b></div>
+                </div>
+                <strong id="data-center-count" hidden></strong>
                 <strong id="chip-count">0 NVIDIA B300 chips</strong>
                 <span class="work-caption" id="chip-work-state">Buy a cluster to start production.</span>
+                <span class="production-perks" id="production-perks" hidden></span>
               </section>
             </div>
             <div class="action-zone">
@@ -82,6 +87,9 @@
             <button class="shop-close" type="button" data-close-shop aria-label="Close production upgrades">×</button>
             <div class="eyebrow">SLOP FACTORY</div><h2 id="production-shop-title">Generate faster</h2>
             <button class="shop-item" id="buy-auto" type="button" disabled><img src="/assets/shop-auto.svg" alt="" onerror="this.style.display='none'"><b>NVIDIA B300 Cluster</b><span>+1 slop / 5s, hands-free.</span><em>Stackable · $1,400</em></button>
+            <button class="shop-item" id="buy-center" type="button" disabled><img src="/assets/data-center.svg" alt=""><b>Data Center</b><span>128 B300 chips. +128 slop / 5s.</span><em>Stackable · $179,200</em></button>
+            <button class="shop-item" id="buy-workspace" type="button" disabled><img src="/assets/workspace.svg" alt=""><b>AI native workspace</b><span>Roll 1–1,000 slop per click. 85%: 1–50 · 12%: 51–250 · 3%: 251–1,000. Bowl capacity still applies.</span><em>Permanent · $7,000</em></button>
+            <button class="shop-item" id="buy-algorithm" type="button" disabled><img src="/assets/deepseek.svg" alt=""><b>DeepSeek Mystery Algorithm</b><span>20% shorter production interval for every B300 and data center. Price doubles each level.</span><em>Level 0 · $3,500</em></button>
             <p class="shop-note">More compute. More slop. Same AI Bubble.</p>
           </dialog>
 

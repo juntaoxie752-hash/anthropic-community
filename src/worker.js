@@ -3,6 +3,7 @@ const actions = {
   posts: 'forum', post: 'forum', create_post: 'forum', reply: 'forum',
   presence: 'api', react: 'api', like: 'api',
   bubble_state: 'bubble', bubble_make: 'bubble', bubble_flush: 'bubble',
+  bubble_buy_center: 'bubble', bubble_buy_workspace: 'bubble', bubble_buy_algorithm: 'bubble',
   bubble_buy_double: 'bubble', bubble_buy_auto: 'bubble', bubble_buy_bowl: 'bubble',
 };
 const reads = new Set(['posts', 'post', 'bubble_state']);

@@ -1,4 +1,4 @@
-import {renderWorkforce} from './workforce.js';
+import {renderWorkforce, formatInterval} from './workforce.js';
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
   const response = await fetch(`/api/${path}`, {
@@ -100,9 +100,26 @@ function render(next) {
   doubleBtn.querySelector('em').textContent = influencerMaxed ? 'Roster complete' : `Hire another · ${exact(influencerCost)}`;
   const autoBtn = $('buy-auto');
   autoBtn.disabled = !ready || busy || arr < SHOP.auto;
+  const interval = next.player.productionInterval ?? 5;
+  autoBtn.querySelector('span').textContent = `+1 slop / ${formatInterval(interval)}, hands-free.`;
   autoBtn.querySelector('em').textContent = next.player.auto > 0
     ? `Owned ×${next.player.auto} · buy again ${exact(SHOP.auto)}`
     : `Stackable · ${exact(SHOP.auto)}`;
+  for (const [id, cost, owned, label] of [
+    ['buy-center', next.shop?.centerCost, false, `Owned ×${next.player.dataCenters ?? 0} · build another`],
+    ['buy-workspace', next.shop?.workspaceCost, !!next.player.workspace, 'Permanent'],
+    ['buy-algorithm', next.shop?.algorithmCost, (next.player.algorithmLevel ?? 0) >= 40, `Level ${next.player.algorithmLevel ?? 0} · upgrade`],
+  ]) {
+    const button = $(id);
+    button.disabled = !ready || busy || owned || cost == null || arr < BigInt(cost);
+    button.classList.toggle('owned', owned);
+    button.querySelector('em').textContent = owned ? (id === 'buy-workspace' ? 'Owned · active' : 'Fully optimized')
+      : cost == null ? 'Loading price…' : `${label} · ${exact(cost)}`;
+  }
+  $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Includes all DeepSeek upgrades.`;
+  $('buy-algorithm').querySelector('span').textContent = next.shop?.nextInterval == null
+    ? `All B300 chips and data centers: ${formatInterval(interval)} per cycle.`
+    : `All B300 chips & data centers: ${formatInterval(interval)} → ${formatInterval(next.shop.nextInterval)}. 20% shorter every level. Price doubles.`;
   const bowlBtn = $('buy-bowl');
   const fundingCost = next.shop ? next.shop.fundingCost : next.world.bowlCost;
   const fundingMaxed = fundingCost == null;
@@ -240,8 +257,40 @@ function goldBurst(count) {
   }
 }
 
+function workspaceResult(next) {
+  if (!next.rolled || !next.player.workspace || next.duplicate) return;
+  const stage = $('poke-stage'), tier = next.rollTier;
+  const title = tier === 'high' ? 'SLOP JACKPOT!' : tier === 'low' ? 'CONTEXT COLLAPSE' : 'WORKSPACE OUTPUT';
+  const result = document.createElement('div');
+  result.className = `workspace-result ${tier}`;
+  const label = document.createElement('small'), amount = document.createElement('strong');
+  label.textContent = title; amount.textContent = `+${next.produced.toLocaleString('en-US')} slop`;
+  result.append(label, amount);
+  stage.querySelector('.workspace-result')?.remove();
+  stage.querySelector('.action-visual').append(result);
+  const overflow = next.overflow ? ` · Rolled ${next.rolled}, ${next.overflow} overflowed. Upgrade your bowl.` : '';
+  flashStatus(`${title} · +${next.produced} slop${overflow}`);
+  setTimeout(() => result.remove(), 2400);
+  if (reducedMotion.matches) return;
+  result.animate(tier === 'low'
+    ? [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}]
+    : [{transform:'scale(.6)',opacity:0},{transform:'scale(1.12)',opacity:1},{transform:'scale(1)',opacity:1}],
+  {duration:450,easing:'ease-out'});
+  if (tier === 'high') {
+    for (let i = 0; i < 12; i++) {
+      const spark = document.createElement('i'); spark.className = 'workspace-spark'; spark.setAttribute('aria-hidden','true');
+      stage.querySelector('.action-visual').append(spark);
+      const angle = i * Math.PI / 6;
+      spark.animate([{transform:'translate(-50%,-50%)',opacity:1},
+        {transform:`translate(calc(-50% + ${Math.cos(angle)*100}px),calc(-50% + ${Math.sin(angle)*75}px)) rotate(160deg)`,opacity:0}],
+      {duration:900,easing:'ease-out'}).onfinish = () => spark.remove();
+    }
+  }
+}
+
 async function act(action) {
   if (!ready || busy) return;
+  actionRevision += 1;
   busy = true;
   if (action === 'bubble_make') {
     pokeImpact();
@@ -253,6 +302,7 @@ async function act(action) {
   try {
     const next = await api(action, { requestId: crypto.randomUUID() });
     if (action === 'bubble_make' && !next.produced && !next.duplicate) overflowSplash();
+    if (action === 'bubble_make') workspaceResult(next);
     if (action === 'bubble_flush' && Number(next.minted) > 0) {
       goldBurst(Number(next.flushed));
       flyToBubble(next.minted);
@@ -290,6 +340,9 @@ $('flush-slop').onclick = () => act('bubble_flush');
 $('flush-slop-label').onclick = () => act('bubble_flush');
 $('buy-double').onclick = () => act('bubble_buy_double');
 $('buy-auto').onclick = () => act('bubble_buy_auto');
+$('buy-center').onclick = () => act('bubble_buy_center');
+$('buy-workspace').onclick = () => act('bubble_buy_workspace');
+$('buy-algorithm').onclick = () => act('bubble_buy_algorithm');
 $('buy-bowl').onclick = () => act('bubble_buy_bowl');
 for (const id of ['production-shop', 'toilet-shop']) {
   const dialog = $(id);
@@ -300,4 +353,15 @@ for (const button of document.querySelectorAll('[data-close-shop]')) button.oncl
 connect();
 tick();
 
-setInterval(() => { if (!document.hidden && ready && !busy) { busy=true; api('bubble_state').then(render).catch(()=>{}).finally(()=>{busy=false;if(state)render(state);}); } },5000);
+// Refresh at the production cadence, at most once a second for very fast fleets.
+// Polling does not lock the action buttons. Ignore a read overtaken by a purchase/click.
+let polling = false, lastPoll = 0, actionRevision = 0;
+setInterval(async () => {
+  const delay = Math.max(1000, Math.min(5000, (state?.player.productionInterval ?? 5) * 1000));
+  if (document.hidden || !ready || busy || polling || Date.now() - lastPoll < delay) return;
+  polling = true; lastPoll = Date.now();
+  const revision = actionRevision;
+  try { const next = await api('bubble_state'); if (!busy && revision === actionRevision) render(next); }
+  catch { /* The next foreground poll retries; server balances remain authoritative. */ }
+  finally { polling = false; }
+}, 250);
