@@ -9,7 +9,11 @@ async function api(path, data) {
     signal: AbortSignal.timeout(12000),
   });
   const result = await response.json();
-  if (!response.ok) throw new Error(result.error || 'Could not connect. Please try again.');
+  if (!response.ok) {
+    const error = new Error(result.error || 'Could not connect. Please try again.');
+    error.status = response.status;
+    throw error;
+  }
   return result;
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -29,6 +33,7 @@ const ipoDate = new Date('2026-11-19T14:30:00Z');
 let ready = false;
 let busy = false;
 let state = null;
+const actionQueue = [];
 
 const money = (value) => {
   const amount = BigInt(value);
@@ -80,8 +85,9 @@ function render(next) {
   $('bubble-shell').dataset.stage = ratio >= 0.9 ? 'critical' : ratio >= 0.5 ? 'strained' : 'forming';
   $('bubble-shell').classList.toggle('is-burst', next.world.burst);
   $('bubble-shell').setAttribute('aria-valuenow', (ratio * 100).toFixed(2));
-  $('make-slop').disabled = !ready || busy;
-  $('flush-slop').disabled = !ready || busy || slop === 0n;
+  $('make-slop').disabled = !ready;
+  // Keep sale taps available while generation is queued, even before its balance arrives.
+  $('flush-slop').disabled = !ready || (slop === 0n && !busy && actionQueue.length === 0);
   $('flush-slop-label').disabled = $('flush-slop').disabled;
   $('flush-note').textContent = slop === 0n
     ? 'Flush me'
@@ -277,7 +283,7 @@ function workspaceResult(next) {
   }
   const stage = $('poke-stage'), tier = next.rollTier;
   const title = tier === 'high' ? 'SLOP JACKPOT!' : tier === 'low' ? 'CONTEXT COLLAPSE' : 'WORKSPACE OUTPUT';
-  const result = workspaceNotice(title, `+${next.produced.toLocaleString('en-US')} slop`, tier);
+  const result = workspaceNotice(`${title}${next.clickCount > 1 ? ` ×${next.clickCount}` : ''}`, `+${next.produced.toLocaleString('en-US')} slop`, tier);
   const overflow = next.overflow ? ` · Rolled ${next.rolled}, ${next.overflow} overflowed. Upgrade your bowl.` : '';
   flashStatus(`${title} · +${next.produced} slop${overflow}`);
   setTimeout(() => result.remove(), 2400);
@@ -298,37 +304,70 @@ function workspaceResult(next) {
   }
 }
 
-async function act(action) {
-  if (!ready || busy) return;
+// Visual feedback is immediate; only confirmed responses change balances.
+function act(action) {
+  if (!ready) return;
+  const isPlay = action === 'bubble_make' || action === 'bubble_flush';
+  if (!isPlay && busy) return;
   actionRevision += 1;
-  busy = true;
   if (action === 'bubble_make') {
     pokeImpact();
-    if (state.player.workspace) workspaceNotice('AI NATIVE WORKSPACE', 'Generating…', 'pending');
-    // Immediate visual feedback; inventory is still credited only by the server.
+    if (state.player.workspace && !$('poke-stage').querySelector('.workspace-result:not(.pending)')) {
+      workspaceNotice('AI NATIVE WORKSPACE', 'Generating…', 'pending');
+    }
     if (BigInt(state.player.slop) < BigInt(state.player.capacity)) setTimeout(pokeDrop, 160);
   }
   if (action === 'bubble_flush') flushAnimation();
+  // Coalesce only adjacent, unsent generate taps. Never move a tap across a sale.
+  const tail = actionQueue.at(-1);
+  if (action === 'bubble_make' && tail?.action === action && tail.count < 40) tail.count += 1;
+  else actionQueue.push({action, count: 1, requestId: crypto.randomUUID()});
+  void drainActions();
+}
+
+async function submitAction(item) {
+  // A retry must reuse the ID: a lost response must never produce or sell twice.
+  for (let attempt = 0; ; attempt += 1) {
+    try { return await api(item.action, {requestId:item.requestId, ...(item.action === 'bubble_make' ? {count:item.count} : {})}); }
+    catch (error) {
+      if (attempt >= 2 || (error.status && error.status < 500)) throw error;
+      await new Promise(resolve => setTimeout(resolve, 400 * (attempt + 1)));
+    }
+  }
+}
+
+async function drainActions() {
+  if (busy) return;
+  busy = true;
   render(state);
   try {
-    const next = await api(action, { requestId: crypto.randomUUID() });
-    if (action === 'bubble_make' && !next.produced && !next.duplicate) overflowSplash();
-    if (action === 'bubble_make') workspaceResult(next);
-    if (action === 'bubble_flush' && Number(next.minted) > 0) {
-      goldBurst(Number(next.flushed));
-      flyToBubble(next.minted);
-      const flushed = BigInt(next.flushed);
-      const total = BigInt(next.minted);
-      const base = flushed * RATE;
-      flashStatus(`${flushed.toLocaleString('en-US')} slop sold for ${exact(total)} of “ARR” · ${Number(total / base)}× total value.`);
+    while (actionQueue.length) {
+      const item = actionQueue.shift();
+      const next = await submitAction(item);
+      if (item.action === 'bubble_make') {
+        if (!next.produced && !next.duplicate) overflowSplash();
+        workspaceResult(next);
+        if (next.duplicate) $('poke-stage').querySelector('.workspace-result.pending')?.remove();
+      }
+      if (item.action === 'bubble_flush' && Number(next.minted) > 0) {
+        goldBurst(Number(next.flushed));
+        flyToBubble(next.minted);
+        const flushed = BigInt(next.flushed), total = BigInt(next.minted);
+        flashStatus(`${flushed.toLocaleString('en-US')} slop sold for ${exact(total)} of “ARR” · ${Number(total / (flushed * RATE))}× total value.`);
+      }
+      render(next);
+      // Leave a short batching window under sustained tapping, below the API request limit.
+      await new Promise(resolve => setTimeout(resolve, 350));
     }
-    render(next);
   } catch (error) {
-    if (action === 'bubble_make' && state.player.workspace) {
-      const notice = workspaceNotice('TRY AGAIN', 'Connection interrupted', 'low');
+    // Stop dependent sales/purchases after an uncertain or rejected action.
+    actionQueue.length = 0;
+    if (state.player.workspace) {
+      const notice = workspaceNotice('TRY AGAIN', 'Sync interrupted', 'low');
       setTimeout(() => notice.remove(), 2400);
     }
-    $('game-status').textContent = error.message;
+    flashStatus(`${error.message} Pending taps cancelled. Balances will refresh.`);
+    lastPoll = 0;
   } finally {
     busy = false;
     if (state) render(state);

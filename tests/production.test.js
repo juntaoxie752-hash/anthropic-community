@@ -7,7 +7,7 @@ import worker from '../src/worker.js';
 async function setup() {
  const db = new PGlite();
  await db.exec('create role anon; create role authenticated; create role service_role;');
- for (const file of ['schema.sql','005_bubble_baseline.sql','006_hype_shop.sql','007_workforce_funding.sql','008_production_upgrades.sql','009_deepseek_pricing.sql']) {
+ for (const file of ['schema.sql','005_bubble_baseline.sql','006_hype_shop.sql','007_workforce_funding.sql','008_production_upgrades.sql','009_deepseek_pricing.sql','011_rapid_clicks.sql']) {
   await db.exec(await readFile(new URL('../supabase/'+file,import.meta.url),'utf8'));
  }
  const call = async (action, payload = {}, visitor = 'factory') => (await db.query(
@@ -102,4 +102,31 @@ test('production purchase API routes enforce POST and same-origin before reachin
   assert.equal((await worker.fetch(new Request(url,{method:'POST',headers:{Origin:'https://elsewhere.test'}}),env)).status,403);
   assert.equal((await worker.fetch(new Request(url,{method:'POST',headers:{Origin:'https://anthropicsucks.club','Content-Type':'text/plain'}}),env)).status,415);
  }
+});
+
+
+test('rapid generation batches preserve individual rolls, capacity, sale order and retry idempotency', async () => {
+ const {db,call}=await setup();
+ try {
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set capacity=1000000 where visitor='factory'");
+  const rid=crypto.randomUUID();
+  let s=await call('bubble_make',{count:40,requestId:rid});
+  assert.equal(s.produced,40);assert.equal(s.player.slop,40);assert.equal(s.outcomes.length,40);
+  s=await call('bubble_make',{count:40,requestId:rid});
+  assert.equal(s.duplicate,true);assert.equal(s.player.slop,40);assert.equal(s.produced,0);
+  s=await call('bubble_flush');assert.equal(s.minted,2800);assert.equal(s.player.slop,0);
+  for(const count of [0,41,-1,1.5,'10',null]) await assert.rejects(call('bubble_make',{count}),/click count/i);
+  await db.exec("update community.bubble_players set workspace=true where visitor='factory'; select setseed(0.314159)");
+  s=await call('bubble_make',{count:40,rolled:999999});
+  assert.equal(s.outcomes.length,40);
+  assert.equal(s.produced,s.outcomes.reduce((sum,r)=>sum+r.produced,0));
+  for(const r of s.outcomes) assert.ok(r.rolled>=1 && r.rolled<=1000);
+  if(s.outcomes.some(r=>r.rolled>=251)) assert.equal(s.rollTier,'high');
+  await db.exec("update community.bubble_players set slop=capacity-1 where visitor='factory'");
+  s=await call('bubble_make',{count:40});
+  assert.equal(s.produced,1);assert.equal(s.player.slop,s.player.capacity);
+  assert.equal(s.outcomes.filter(r=>r.rolled>0).length,1);
+  s=await call('bubble_flush');assert.equal(s.minted,1000000*70*5);
+ } finally {await db.close();}
 });

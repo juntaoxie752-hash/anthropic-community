@@ -1,4 +1,4 @@
-// iOS can still zoom on fast taps while an action button is temporarily disabled.
+// Cancel native double-tap handling for stationary taps within the game.
 // Handle stationary single-finger button taps explicitly, including disabled ones.
 // Swipes, editable fields and multi-touch gestures keep their native behavior.
 export function installGameTouch(root) {

@@ -18,21 +18,33 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
    shop:{influencerCost:134400,fundingCost:57344000,nextCapacity:1000000,nextRound:'Series D',centerCost:179200,workspaceCost:7000,algorithmCost:350000,nextInterval:4},
    produced:0,rolled:0,rollTier:null,duplicate:false,overflow:0
   };
-  let forcedRoll=900, pendingRead, resolveRead;
+  let forcedRoll=900, pendingRead, resolveRead, holdWrite, releaseWrite, failWrite=false, loseResponse=false;
+  const writes=[], seen=new Set();
   window.fetch=async(url, options={})=>{
    const action=url.split('/').at(-1);
    if(action==='bubble_state' && pendingRead) return new Promise(resolve=>{resolveRead=()=>resolve({ok:true,json:async()=>structuredClone(pendingRead)});});
+   if(options.method==='POST') {
+    writes.push({action,...JSON.parse(options.body)});
+    if(holdWrite) {holdWrite=false;await new Promise(resolve=>{releaseWrite=resolve;});}
+    if(failWrite) {failWrite=false;return {ok:false,status:400,json:async()=>({error:'Rejected action'})};}
+   }
+   const requestId=options.body && JSON.parse(options.body).requestId;
+   if(requestId && seen.has(requestId)) return {ok:true,json:async()=>({...structuredClone(data),duplicate:true,produced:0,rolled:0})};
+   if(requestId) seen.add(requestId);
    data.produced=0;data.rolled=0;data.rollTier=null;
+   const count=options.body ? (JSON.parse(options.body).count ?? 1) : 1;
    if(action==='bubble_buy_center') {data.player.dataCenters++;data.player.totalChips+=128;data.player.arr-=data.shop.centerCost;}
    if(action==='bubble_buy_workspace') {data.player.workspace=true;data.player.arr-=7000;data.shop.workspaceCost=null;}
    if(action==='bubble_buy_algorithm') {data.player.algorithmLevel++;data.player.productionInterval*=.8;data.player.arr-=data.shop.algorithmCost;data.shop.algorithmCost*=2;data.shop.nextInterval=data.player.productionInterval*.8;}
-   if(action==='bubble_make' && data.player.slop<data.player.capacity) {data.rolled=forcedRoll;data.produced=Math.min(forcedRoll,data.player.capacity-data.player.slop);data.overflow=data.rolled-data.produced;data.player.slop+=data.produced;data.rollTier=forcedRoll<=10?'low':'high';}
+   if(action==='bubble_make' && data.player.slop<data.player.capacity) {data.rolled=forcedRoll*count;data.produced=Math.min(forcedRoll*count,data.player.capacity-data.player.slop);data.overflow=data.rolled-data.produced;data.player.slop+=data.produced;data.rollTier=forcedRoll<=10?'low':'high';}
+   if(action==='bubble_flush') {data.player.arr+=data.player.slop*70;data.player.slop=0;}
+   if(loseResponse && requestId) {loseResponse=false;throw new Error('Lost response');}
    return {ok:true,json:async()=>structuredClone(data)};
   };
   window.matchMedia=()=>({matches:false});
   const intervals=[];
   window.setInterval=(fn,delay)=>{intervals.push({fn,delay});return intervals.length;};
-  window.setTimeout=()=>1;window.clearTimeout=()=>{};
+  window.setTimeout=(fn,delay)=>{if([350,400,800].includes(delay))queueMicrotask(fn);return 1;};window.clearTimeout=()=>{};
   window.Element.prototype.getAnimations=()=>[];
   window.Element.prototype.animate=function(frames){this.dataset.animated='true';return {onfinish:null};};
   const workforce=(await readFile(new URL('../public/workforce.js',import.meta.url),'utf8')).replaceAll('export ','');
@@ -67,6 +79,35 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   data.player.slop=data.player.capacity;
   q('make-slop').click();await nextTurn();
   assert.match(window.document.querySelector('.workspace-result.low').textContent,/Sell slop first/);
+  // Rapid taps stay enabled, animate immediately and batch behind an in-flight write.
+  data.player.slop=0;forcedRoll=1;holdWrite=true;
+  const before=writes.length;
+  q('make-slop').click();
+  for(let i=0;i<12;i++) q('make-slop').click();
+  assert.equal(q('make-slop').disabled,false);
+  assert.equal(q('gesture').dataset.animated,'true');
+  q('flush-slop-label').click();
+  q('make-slop').click();q('make-slop').click();
+  assert.equal(writes.length,before+1);
+  releaseWrite();await nextTurn();
+  assert.deepEqual(writes.slice(before).map(x=>[x.action,x.count]),[
+   ['bubble_make',1],['bubble_make',12],['bubble_flush',undefined],['bubble_make',2]
+  ]);
+  assert.equal(data.player.slop,2);
+  assert.equal(new Set(writes.slice(before).map(x=>x.requestId)).size,4);
+  // Rejected writes cancel dependent work and release the controls.
+  holdWrite=true;failWrite=true;const failureStart=writes.length;
+  q('make-slop').click();q('flush-slop-label').click();q('make-slop').click();
+  releaseWrite();await nextTurn();
+  assert.equal(writes.length,failureStart+1);
+  assert.match(q('game-status').textContent,/Pending taps cancelled/);
+  assert.equal(q('make-slop').disabled,false);
+  // A lost response retries the same request ID without crediting a second time.
+  const retryStart=writes.length, slopBefore=data.player.slop;
+  loseResponse=true;q('make-slop').click();await nextTurn();
+  assert.equal(writes.length,retryStart+2);
+  assert.equal(writes[retryStart].requestId,writes[retryStart+1].requestId);
+  assert.equal(data.player.slop,slopBefore+1);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;
