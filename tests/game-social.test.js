@@ -24,6 +24,15 @@ test('board ranks sales, hides identity, saves names and archives immutable even
   await call('bubble_events');assert.equal((await db.query('select contributed from community.bubble_world')).rows[0].contributed,balance);
   await db.query("update community.bubble_world set latest_event=$1",[JSON.stringify({id:'second-event',occurredAt:'2026-11-17T00:00:00Z',title:'Test event',loss:5,before:10,after:5})]);
   s=await call('bubble_events');assert.equal(s.items.length,2);assert.equal(s.items[0].id,'second-event');
+  // Hide a fixed snapshot of the top ten, never repeatedly skip the next ten.
+  await db.exec("insert into community.bubble_players(visitor,contributed,arr) select 'leader-'||i,1000+i,777 from generate_series(1,12) as i");
+  const cleanup=await readFile(new URL('../supabase/019_board_cleanup.sql',import.meta.url),'utf8');
+  await db.exec(cleanup);
+  s=await call('bubble_board');assert.equal(s.items[0].contributed,1002);assert.equal(s.items[0].rank,1);
+  assert.equal((await db.query('select count(*)::int n from community.bubble_board_exclusions')).rows[0].n,10);
+  const hidden=await call('bubble_board',{},'leader-12');assert.equal(hidden.me.excluded,true);assert.equal(hidden.me.contributed,1012);assert.equal(hidden.me.rank,null);
+  await db.exec(cleanup);assert.equal((await call('bubble_board')).items[0].contributed,1002);
+  assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-12'")).rows[0].arr,777);
   await db.exec('set role anon');await assert.rejects(call('bubble_board'));await assert.rejects(db.query('select * from community.bubble_events'));
  }finally{await db.close();}
 });

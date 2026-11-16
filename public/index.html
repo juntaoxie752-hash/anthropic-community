@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=a-slash">
   <link rel="preload" href="/assets/fonts/fugaz-one-regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="/assets/fonts/oxanium-variable.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="/style.css?v=neo-1"><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=neo-1"></script><script type="module" src="/share.js?v=rewards-3"></script><script type="module" src="/game-social.js?v=neo-1"></script>
+  <link rel="stylesheet" href="/style.css?v=utility-1"><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=neo-1"></script><script type="module" src="/share.js?v=rewards-3"></script><script type="module" src="/game-social.js?v=utility-1"></script>
   <script type="module" src="/game-touch.js?v=touch-2"></script>
 </head>
 <body>
@@ -56,6 +56,14 @@
             </div>
             
           </div>
+
+          <nav class="game-utility-nav" aria-label="Game shortcuts">
+            <button class="game-small-button leaderboard-shortcut" id="open-leaderboard" type="button" aria-haspopup="dialog" aria-controls="leaderboard-dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0V3Z"/><path d="M8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 2v5m-4 3h8m-6-3h4v3"/></svg><span>Leaderboard</span></button>
+            <button class="game-small-button events-shortcut" id="open-events" type="button" aria-haspopup="dialog" aria-controls="events-dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-8l1-7Z"/></svg><span>Events</span><i aria-hidden="true"></i></button>
+          <div class="utility-share">
+            <button class="hero-share" data-share type="button" aria-label="Share this website">Share <small class="credit-bonus" data-share-bonus title="One-time share credits">+$50K</small></button>
+          </div>
+          </nav>
 
           <div class="mini-progress" aria-label="Shared bubble progress toward $1.4T">
             <div class="mini-progress-copy"><span>AI bubble: Anthropic valuation</span><strong id="bubble-progress">$0 / $1.4T</strong></div>
@@ -132,11 +140,7 @@
           </dialog>
 
           <div class="reward-strip" aria-label="Earn ARR"><button data-share type="button"><b data-share-reward>First share +$50K</b><span>Copy a link or tap a share option · once per browser on this site</span></button><a href="#wall"><b>Post +$30K</b><span>Every new post</span></a><a href="/posts"><b>Reply +$20K</b><span>Every new reply</span></a></div>
-          <div class="game-actions">
-            <button class="game-small-button" id="open-leaderboard" type="button" aria-haspopup="dialog" aria-controls="leaderboard-dialog">Leaderboard</button>
-            <button class="game-small-button" id="open-events" type="button" aria-haspopup="dialog" aria-controls="events-dialog">Events</button>
-            <button class="hero-share" data-share type="button" aria-label="Share this website">Share <small class="credit-bonus" data-share-bonus title="One-time share credits">+$50K</small></button>
-          </div>
+
         </section>
 
         <div class="presence"><div class="countries" id="countries" aria-label="Countries online" hidden></div><p class="connection" id="connection" role="status"><span class="status-dot"></span><span id="connection-text">Connecting…</span></p></div>

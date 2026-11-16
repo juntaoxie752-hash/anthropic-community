@@ -17,7 +17,7 @@ function renderBoard(data) {
   }
   rows.append(row);
  }
- $('personal-rank').textContent=`You: ${data.me.rank ? `#${data.me.rank}` : 'Unranked'} · ${dollars(data.me.contributed)} contributed`;
+ $('personal-rank').textContent=`You: ${data.me.excluded ? 'Not listed' : data.me.rank ? `#${data.me.rank}` : 'Unranked'} · ${dollars(data.me.contributed)} contributed`;
  $('leaderboard-status').textContent=data.items.length?'':'No sales yet. Be the first on the board.';
 }
 let boardLoading=false;
