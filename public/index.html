@@ -32,6 +32,7 @@
           <div class="mini-progress" aria-label="Shared bubble progress toward $1.4T">
             <div class="mini-progress-copy"><span>AI Bubble</span><strong id="bubble-progress">$0 / $1.4T</strong></div>
             <div class="mini-progress-track" id="bubble-shell" data-stage="forming" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Shared bubble progress"><span id="bubble-fill"></span></div>
+            <p class="slop-saas-banner">Generate AI slops and sell them as SaaS</p>
             <span class="mini-progress-note" id="bubble-countdown" hidden></span>
           </div>
 
@@ -57,7 +58,10 @@
               <div class="toilet-scene"><button class="toilet-button main-visual" id="flush-slop" type="button" disabled aria-label="Sell as super intelligence">
                 <span class="toilet" id="toilet" aria-hidden="true"><img src="/assets/toilet.svg" alt="" onerror="this.parentElement.innerHTML='<span>💩</span><b></b>'"><i class="flush-water"></i><i class="bowl-slop">💩</i></span>
               </button>
-                <span class="slop-meter" id="slop-meter" title="Toilet capacity"><b id="slop-balance">0 / 10</b><span>AI Slop</span></span>
+                <div class="toilet-readout">
+                  <span class="slop-meter" id="slop-meter" title="Toilet capacity"><b id="slop-balance">0 / 10</b><span>AI Slop</span></span>
+                  <span class="flush-note" id="flush-note">Flush me</span>
+                </div>
                 <div class="funding-status" aria-label="Current funding round"><strong id="funding-round">Seed</strong><span id="funding-amount">Bootstrapped · $0</span></div>
               </div>
               <div class="action-buttons">
@@ -72,7 +76,6 @@
             </div>
           </div>
 
-          <p class="flush-note" id="flush-note">Generate slop, then sell it.</p>
           <p class="game-status" id="game-status" role="status">Connecting the shared bubble…</p>
 
           <dialog class="upgrade-shop" id="production-shop" aria-labelledby="production-shop-title">
