@@ -302,3 +302,18 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 .workspace-result.pending strong{font-size:23px}.workspace-result.pending{color:#ddc4ff;animation:workspace-thinking .65s ease-in-out infinite alternate}
 @keyframes workspace-thinking{to{opacity:.55;translate:0 -3px}}
 @media(max-width:700px){.workspace-result{top:0}.workspace-result strong{font-size:26px}.workspace-result.pending strong,.workspace-result.low strong{font-size:22px}}
+
+/* A world event lives above the game without shifting its compact layout. */
+.world-event{width:min(460px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;margin:auto;padding:30px 28px;border:1px solid #f9774a;border-radius:24px;background:radial-gradient(ellipse at top,#54291f,#171311 65%);color:#f8efe5;text-align:center;box-shadow:0 24px 100px #000a;font-family:inherit}
+.world-event::backdrop{background:#090706c9;backdrop-filter:blur(8px)}
+.world-event-label{margin:0 0 12px;color:#ffb08b;font:700 11px 'Space Mono',monospace;letter-spacing:.18em}
+.world-event-art{position:relative;display:inline-block;font-size:58px;line-height:1.2}.world-event-art span{position:absolute;right:-24px;top:-6px;font-size:44px}
+.world-event h2{font-size:clamp(27px,6vw,37px);line-height:1.05;margin:16px 0;font-weight:900;letter-spacing:-.04em}
+#world-event-description{font-size:15px;line-height:1.55;color:#d5c5b9;margin:0}
+.world-event-loss{display:block;font:900 clamp(64px,15vw,86px)/1.15 'Oxanium',sans-serif;color:#ff7b59;margin-top:12px;text-shadow:0 0 35px #ff542e55}
+.world-event-impact{margin:0;color:#ffb08b;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.world-event-values{font:700 18px 'Space Mono',monospace;margin:14px 0}
+.world-event-disclaimer{font-size:12px;line-height:1.6;color:#bbaa9e;margin:16px 0}
+.world-event button{width:100%;padding:14px 18px;border:0;border-radius:12px;background:#f58a57;color:#21120c;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.world-event button:focus-visible{outline:3px solid white;outline-offset:4px}
+@media(max-height:700px){.world-event{padding:20px}.world-event-art{font-size:40px}.world-event h2{margin:10px 0}.world-event-loss{font-size:60px}}

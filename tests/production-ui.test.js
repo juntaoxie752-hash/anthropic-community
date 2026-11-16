@@ -50,7 +50,7 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   const workforce=(await readFile(new URL('../public/workforce.js',import.meta.url),'utf8')).replaceAll('export ','');
   const game=(await readFile(new URL('../public/game.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
   const context=vm.createContext({window,document:window.document,fetch:window.fetch,matchMedia:window.matchMedia,
-    ensureSession:async()=>({}),setInterval:window.setInterval,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,crypto,BigInt,console,
+    localStorage:window.localStorage,ensureSession:async()=>({}),setInterval:window.setInterval,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,crypto,BigInt,console,
     AbortSignal,Element:window.Element,queueMicrotask,structuredClone});
   vm.runInContext(workforce+'\n'+game,context);
   await nextTurn();
@@ -108,6 +108,17 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   assert.equal(writes.length,retryStart+2);
   assert.equal(writes[retryStart].requestId,writes[retryStart+1].requestId);
   assert.equal(data.player.slop,slopBefore+1);
+  // One-time event modal shows a fictional label and persists dismissal.
+  const shock={id:'test-shock',loss:1000000000000,before:1500000000000,after:500000000000};
+  data.world.event=shock;
+  q('make-slop').click();await nextTurn();
+  assert.equal(q('world-event').open,true);
+  assert.match(q('world-event').textContent,/FICTIONAL GAME EVENT/);
+  assert.equal(q('world-event-loss').textContent,'−$1T');
+  assert.equal(q('world-event-values').textContent,'$1.5T → $500B');
+  q('world-event-close').click();await nextTurn();
+  assert.equal(window.localStorage.getItem('bubble-event-seen:test-shock'),'1');
+  q('make-slop').click();await nextTurn();assert.equal(q('world-event').open,false);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;

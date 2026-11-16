@@ -130,3 +130,24 @@ test('rapid generation batches preserve individual rolls, capacity, sale order a
   s=await call('bubble_flush');assert.equal(s.minted,1000000*70*5);
  } finally {await db.close();}
 });
+
+
+test('fictional world shock deducts $1T exactly once and preserves players and future sales', async () => {
+ const {db,call}=await setup();
+ try {
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set arr=1000,contributed=2000,slop=1,auto=2 where visitor='factory'; update community.bubble_world set contributed=1500000000000,burst_at=now()");
+  const sql=await readFile(new URL('../supabase/012_datacenter_event.sql',import.meta.url),'utf8');
+  await db.exec(sql);
+  let s=await call('bubble_state');
+  assert.equal(s.world.contributed,500000000000);assert.equal(s.world.burst,false);
+  assert.equal(s.world.event.loss,1000000000000);assert.equal(s.world.event.before,1500000000000);
+  assert.equal(s.player.arr,1000);assert.equal(s.player.contributed,2000);assert.equal(s.player.auto,2);
+  await db.exec(sql);s=await call('bubble_state');assert.equal(s.world.contributed,500000000000);
+  s=await call('bubble_flush');assert.equal(s.world.contributed,500000000070);
+  assert.equal(s.player.arr,1070);assert.equal(s.player.contributed,2070);
+  // A lower initial balance floors at zero rather than becoming negative.
+  await db.exec("update community.bubble_world set latest_event=null,contributed=100,burst_at=null");
+  await db.exec(sql);s=await call('bubble_state');assert.equal(s.world.contributed,0);assert.equal(s.world.event.loss,100);
+ } finally {await db.close();}
+});

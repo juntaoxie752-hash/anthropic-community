@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=a-slash">
   <link rel="preload" href="/assets/fonts/fugaz-one-regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="/assets/fonts/oxanium-variable.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="/style.css?v=workspace-feedback-3"><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=rapid-clicks-1"></script><script type="module" src="/share.js"></script>
+  <link rel="stylesheet" href="/style.css?v=world-event-1"><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=world-event-1"></script><script type="module" src="/share.js"></script>
   <script type="module" src="/game-touch.js?v=touch-2"></script>
 </head>
 <body>
@@ -20,6 +20,17 @@
         <p class="eyebrow">ONE SHARED BUBBLE</p>
         <h1 id="headline">Burst the AI bubble<span>.</span></h1>
 
+        <dialog id="world-event" class="world-event" aria-labelledby="world-event-title" aria-describedby="world-event-description">
+          <p class="world-event-label">FICTIONAL GAME EVENT</p>
+          <div class="world-event-art" aria-hidden="true">🏢<span>💥</span></div>
+          <h2 id="world-event-title">Data center down.<br>Bubble deflated.</h2>
+          <p id="world-event-description">In this fictional game scenario, Iran bombs a data center. The AI bubble takes a massive hit.</p>
+          <strong class="world-event-loss" id="world-event-loss">−$1T</strong>
+          <p class="world-event-impact">Shared AI Bubble valuation</p>
+          <p id="world-event-values" class="world-event-values"></p>
+          <p class="world-event-disclaimer">Game satire, not a real-world news report. Your cash, upgrades and lifetime contribution are unchanged.</p>
+          <button id="world-event-close" type="button">Back to making slop</button>
+        </dialog>
         <section class="bubble-game" aria-label="Shared bubble game">
           <div class="ipo-countdown" id="ipo-countdown" aria-label="Time until the expected IPO">
             <p class="countdown-label">Anthropic expected IPO date</p>

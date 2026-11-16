@@ -64,8 +64,24 @@ function updateCountdown() {
 
 // The countdown ticks independently; balances are refreshed from the server.
 
+let shownWorldEvent = null;
+function showWorldEvent(event) {
+  if (!event?.id || shownWorldEvent === event.id) return;
+  const key = `bubble-event-seen:${event.id}`;
+  try {if (localStorage.getItem(key)) {shownWorldEvent = event.id; return;}} catch { /* Session-only dismissal if storage is blocked. */ }
+  const dialog = $('world-event');
+  if (!dialog || document.querySelector('dialog[open]')) return;
+  shownWorldEvent = event.id;
+  $('world-event-loss').textContent = `−${money(event.loss)}`;
+  $('world-event-values').textContent = `${money(event.before)} → ${money(event.after)}`;
+  dialog.addEventListener('close', () => {try {localStorage.setItem(key, '1');} catch {}}, {once:true});
+  $('world-event-close').onclick = () => dialog.close();
+  dialog.showModal();
+}
+
 function render(next) {
   state = next;
+  showWorldEvent(next.world.event);
   const contributed = BigInt(next.world.contributed);
   const ratio = Math.min(1, Number(contributed) / Number(GOAL));
   const slop = BigInt(next.player.slop);
