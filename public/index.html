@@ -26,51 +26,58 @@
               <div class="countdown-cell"><strong id="countdown-mins">00</strong><span>Mins</span></div><b aria-hidden="true">:</b>
               <div class="countdown-cell"><strong id="countdown-secs">00</strong><span>Secs</span></div>
             </div>
-            <p class="countdown-note" id="round-status">IPO date unconfirmed · Reported target: $1.4T</p>
+            
           </div>
 
           <div class="mini-progress" aria-label="Shared bubble progress toward $1.4T">
-            <div class="mini-progress-copy"><span>Shared bubble</span><strong id="bubble-progress">$0 / $1.4T</strong></div>
+            <div class="mini-progress-copy"><span>AI Bubble</span><strong id="bubble-progress">$0 / $1.4T</strong></div>
             <div class="mini-progress-track" id="bubble-shell" data-stage="forming" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Shared bubble progress"><span id="bubble-fill"></span></div>
-            <span class="mini-progress-note" id="bubble-countdown">Community pool</span>
-          </div>
-
-          <div class="machine" id="machine">
-            <div class="action-panel" id="poke-stage">
-              <div class="action-visual logo-action" aria-hidden="true"><svg class="hero-logo" aria-hidden="true" viewBox="0 0 100 100"><path d="m19.6 66.5 19.7-11 .3-1-.3-.5h-1l-3.3-.2-11.2-.3L14 53l-9.5-.5-2.4-.5L0 49l.2-1.5 2-1.3 2.9.2 6.3.5 9.5.6 6.9.4L38 49.1h1.6l.2-.7-.5-.4-.4-.4L29 41l-10.6-7-5.6-4.1-3-2-1.5-2-.6-4.2 2.7-3 3.7.3.9.2 3.7 2.9 8 6.1L37 36l1.5 1.2.6-.4.1-.3-.7-1.1L33 25l-6-10.4-2.7-4.3-.7-2.6c-.3-1-.4-2-.4-3l3-4.2L28 0l4.2.6L33.8 2l2.6 6 4.1 9.3L47 29.9l2 3.8 1 3.4.3 1h.7v-.5l.5-7.2 1-8.7 1-11.2.3-3.2 1.6-3.8 3-2L61 2.6l2 2.9-.3 1.8-1.1 7.7L59 27.1l-1.5 8.2h.9l1-1.1 4.1-5.4 6.9-8.6 3-3.5L77 13l2.3-1.8h4.3l3.1 4.7-1.4 4.9-4.4 5.6-3.7 4.7-5.3 7.1-3.2 5.7.3.4h.7l12-2.6 6.4-1.1 7.6-1.3 3.5 1.6.4 1.6-1.4 3.4-8.2 2-9.6 2-14.3 3.3-.2.1.2.3 6.4.6 2.8.2h6.8l12.6 1 3.3 2 1.9 2.7-.3 2-5.1 2.6-6.8-1.6-16-3.8-5.4-1.3h-.8v.4l4.6 4.5 8.3 7.5L89 80.1l.5 2.4-1.3 2-1.4-.2-9.2-7-3.6-3-8-6.8h-.5v.7l1.8 2.7 9.8 14.7.5 4.5-.7 1.4-2.6 1-2.7-.6-5.8-8-6-9-4.7-8.2-.5.4-2.9 30.2-1.3 1.5-3 1.2-2.5-2-1.4-3 1.4-6.2 1.6-8 1.3-6.4 1.2-7.9.7-2.6v-.2H49L43 72l-9 12.3-7.2 7.6-1.7.7-3-1.5.3-2.8L24 86l10-12.8 6-7.9 4-4.6-.1-.5h-.3L17.2 77.4l-4.7.6-2-2 .2-3 1-1 8-5.5Z"/></svg><span class="gesture" id="gesture">👆</span></div>
-              <button class="main-action" id="make-slop" type="button" disabled aria-label="Generate AI slop"><span>Generate AI slop</span></button>
-              <button class="upgrade-open" id="open-production-shop" type="button" aria-haspopup="dialog" aria-controls="production-shop">Upgrade</button>
-            </div>
-            <div class="action-panel">
-              <button class="toilet-button main-visual" id="flush-slop" type="button" disabled aria-label="Sell as super intelligence">
-                <span class="toilet" id="toilet" aria-hidden="true"><img src="/assets/toilet.svg" alt="" onerror="this.parentElement.innerHTML='<span>💩</span><b></b>'"><b></b></span>
-              </button>
-              <button class="main-action" id="flush-slop-label" type="button" disabled aria-label="Sell as super intelligence"><span>Sell as <q>super intelligence</q></span><small id="flush-note">Flush me</small></button>
-              <button class="upgrade-open" id="open-toilet-shop" type="button" aria-haspopup="dialog" aria-controls="toilet-shop">Upgrade</button>
-            </div>
+            <span class="mini-progress-note" id="bubble-countdown" hidden></span>
           </div>
 
           <div class="hud" aria-label="Your balances">
-            <div><span>AI Slop</span><strong id="slop-balance">0</strong></div>
-            <div><span>“ARR”</span><strong id="arr-balance">$0</strong></div>
-            <div><span>Your contribution</span><strong id="player-contribution">$0</strong></div>
+            <div><span>“ARR” · Cash on hand</span><strong id="arr-balance">$0</strong></div>
+            <div><span>Your contribution · Lifetime</span><strong id="player-contribution">$0</strong></div>
           </div>
 
+          <div class="machine" id="machine">
+            <div class="action-zone" id="poke-stage">
+              <div class="action-visual logo-action" aria-hidden="true"><svg class="hero-logo" aria-hidden="true" viewBox="0 0 100 100"><path d="m19.6 66.5 19.7-11 .3-1-.3-.5h-1l-3.3-.2-11.2-.3L14 53l-9.5-.5-2.4-.5L0 49l.2-1.5 2-1.3 2.9.2 6.3.5 9.5.6 6.9.4L38 49.1h1.6l.2-.7-.5-.4-.4-.4L29 41l-10.6-7-5.6-4.1-3-2-1.5-2-.6-4.2 2.7-3 3.7.3.9.2 3.7 2.9 8 6.1L37 36l1.5 1.2.6-.4.1-.3-.7-1.1L33 25l-6-10.4-2.7-4.3-.7-2.6c-.3-1-.4-2-.4-3l3-4.2L28 0l4.2.6L33.8 2l2.6 6 4.1 9.3L47 29.9l2 3.8 1 3.4.3 1h.7v-.5l.5-7.2 1-8.7 1-11.2.3-3.2 1.6-3.8 3-2L61 2.6l2 2.9-.3 1.8-1.1 7.7L59 27.1l-1.5 8.2h.9l1-1.1 4.1-5.4 6.9-8.6 3-3.5L77 13l2.3-1.8h4.3l3.1 4.7-1.4 4.9-4.4 5.6-3.7 4.7-5.3 7.1-3.2 5.7.3.4h.7l12-2.6 6.4-1.1 7.6-1.3 3.5 1.6.4 1.6-1.4 3.4-8.2 2-9.6 2-14.3 3.3-.2.1.2.3 6.4.6 2.8.2h6.8l12.6 1 3.3 2 1.9 2.7-.3 2-5.1 2.6-6.8-1.6-16-3.8-5.4-1.3h-.8v.4l4.6 4.5 8.3 7.5L89 80.1l.5 2.4-1.3 2-1.4-.2-9.2-7-3.6-3-8-6.8h-.5v.7l1.8 2.7 9.8 14.7.5 4.5-.7 1.4-2.6 1-2.7-.6-5.8-8-6-9-4.7-8.2-.5.4-2.9 30.2-1.3 1.5-3 1.2-2.5-2-1.4-3 1.4-6.2 1.6-8 1.3-6.4 1.2-7.9.7-2.6v-.2H49L43 72l-9 12.3-7.2 7.6-1.7.7-3-1.5.3-2.8L24 86l10-12.8 6-7.9 4-4.6-.1-.5h-.3L17.2 77.4l-4.7.6-2-2 .2-3 1-1 8-5.5Z"/></svg><span class="gesture" id="gesture">🖕</span></div>
+              <div class="action-buttons">
+                <button class="main-action primary" id="make-slop" type="button" disabled aria-label="Generate AI slop"><span>Generate AI slop</span></button>
+                <button class="upgrade-open" id="open-production-shop" type="button" aria-haspopup="dialog" aria-controls="production-shop">Upgrade</button>
+              </div>
+            </div>
+            <div class="action-zone">
+              <div class="toilet-scene"><button class="toilet-button main-visual" id="flush-slop" type="button" disabled aria-label="Sell as super intelligence">
+                <span class="toilet" id="toilet" aria-hidden="true"><img src="/assets/toilet.svg" alt="" onerror="this.parentElement.innerHTML='<span>💩</span><b></b>'"><i class="flush-water"></i><i class="bowl-slop">💩</i></span>
+              </button>
+                <span class="slop-meter" id="slop-meter" title="Toilet capacity"><b id="slop-balance">0 / 10</b><span>AI Slop</span></span>
+                <span class="influencer-count" id="influencer-count">0 AI influencers · 1× sales</span>
+              </div>
+              <div class="action-buttons">
+                <button class="main-action primary" id="flush-slop-label" type="button" disabled aria-label="Sell as super intelligence"><span>Sell as <q>SI</q></span></button>
+                <button class="upgrade-open" id="open-toilet-shop" type="button" aria-haspopup="dialog" aria-controls="toilet-shop">Upgrade</button>
+              </div>
+            </div>
+          </div>
+
+          <p class="flush-note" id="flush-note">Generate slop, then sell it.</p>
           <p class="game-status" id="game-status" role="status">Connecting the shared bubble…</p>
 
           <dialog class="upgrade-shop" id="production-shop" aria-labelledby="production-shop-title">
             <button class="shop-close" type="button" data-close-shop aria-label="Close production upgrades">×</button>
             <div class="eyebrow">SLOP FACTORY</div><h2 id="production-shop-title">Generate faster</h2>
-            <button class="shop-item" id="buy-auto" type="button" disabled><img src="/assets/shop-auto.svg" alt="" onerror="this.style.display='none'"><b>Slop Synthesizer</b><span>+1 slop / 10s, hands-free.</span><em>Stackable · $1,400</em></button>
-            <p class="shop-note">More production. Same shared bubble.</p>
+            <button class="shop-item" id="buy-auto" type="button" disabled><img src="/assets/shop-auto.svg" alt="" onerror="this.style.display='none'"><b>NVIDIA B300 Cluster</b><span>+1 slop / 10s, hands-free.</span><em>Stackable · $1,400</em></button>
+            <p class="shop-note">More compute. More slop. Same AI Bubble.</p>
           </dialog>
 
           <dialog class="upgrade-shop" id="toilet-shop" aria-labelledby="toilet-shop-title">
             <button class="shop-close" type="button" data-close-shop aria-label="Close toilet upgrades">×</button>
-            <div class="eyebrow">SUPER INTELLIGENCE</div><h2 id="toilet-shop-title">Flush smarter</h2>
-            <button class="shop-item" id="buy-double" type="button" disabled><img src="/assets/shop-double.svg" alt="" onerror="this.style.display='none'"><b>2× Toilet</b><span>Every flush pays double.</span><em>Own it forever · $2,100</em></button>
-            <button class="shop-item" id="buy-bowl" type="button" disabled><img src="/assets/shop-bowl.svg" alt="" onerror="this.style.display='none'"><b>Bigger Bowl</b><span>+10 slop capacity per upgrade.</span><em>+10 capacity · $3,500</em></button>
-            <p class="shop-note">All tools are permanent and only speed up the same loop: poke → slop → flush → “ARR”.</p>
+            <div class="eyebrow">SUPER INTELLIGENCE</div><h2 id="toilet-shop-title">Scale the hype</h2>
+            <button class="shop-item" id="buy-double" type="button" disabled><img src="/assets/shop-double.svg" alt="" onerror="this.style.display='none'"><b>AI Influencer</b><span>Hire another hype machine. +1× sale value.</span><em>Loading price…</em></button>
+            <button class="shop-item" id="buy-bowl" type="button" disabled><img src="/assets/shop-bowl.svg" alt="" onerror="this.style.display='none'"><b>Funding round</b><span>Seed → Series A. 10× the capacity.</span><em>Loading round…</em></button>
+            <p class="shop-note">More influencers. Bigger rounds. More money for the AI Bubble.</p>
           </dialog>
 
           <div class="game-actions">
