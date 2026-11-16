@@ -1,5 +1,6 @@
 import {renderForum, rpc} from './forum.js';
 const actions = {
+  bubble_board:'social', bubble_name:'social', bubble_events:'social',
   reward_state: 'rewards', reward_share: 'rewards',
   posts: 'forum', post: 'forum', create_post: 'forum', reply: 'forum',
   presence: 'api', react: 'api', like: 'api',
@@ -7,7 +8,7 @@ const actions = {
   bubble_buy_center: 'bubble', bubble_buy_workspace: 'bubble', bubble_buy_algorithm: 'bubble',
   bubble_buy_double: 'bubble', bubble_buy_auto: 'bubble', bubble_buy_bowl: 'bubble',
 };
-const reads = new Set(['posts', 'post', 'bubble_state', 'reward_state']);
+const reads = new Set(['posts', 'post', 'bubble_state', 'reward_state', 'bubble_board', 'bubble_events']);
 const json = (body, status = 200) => Response.json(body, {status, headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export default {
   async fetch(request, env) {

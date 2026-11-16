@@ -65,19 +65,23 @@ function updateCountdown() {
 // The countdown ticks independently; balances are refreshed from the server.
 
 let shownWorldEvent = null;
-function showWorldEvent(event) {
-  if (!event?.id || shownWorldEvent === event.id) return;
+function showWorldEvent(event, replay = false) {
+  if (!event?.id || (!replay && shownWorldEvent === event.id)) return;
   const key = `bubble-event-seen:${event.id}`;
-  try {if (localStorage.getItem(key)) {shownWorldEvent = event.id; return;}} catch { /* Session-only dismissal if storage is blocked. */ }
+  try {if (!replay && localStorage.getItem(key)) {shownWorldEvent = event.id; return;}} catch { /* Session-only dismissal if storage is blocked. */ }
   const dialog = $('world-event');
   if (!dialog || document.querySelector('dialog[open]')) return;
   shownWorldEvent = event.id;
+  $('world-event-title').textContent = event.title || 'Data center down. Bubble deflated.';
+  $('world-event-description').textContent = event.description || 'In this fictional game scenario, Iran bombs a data center. The AI bubble takes a massive hit.';
   $('world-event-loss').textContent = `−${money(event.loss)}`;
   $('world-event-values').textContent = `${money(event.before)} → ${money(event.after)}`;
   dialog.addEventListener('close', () => {try {localStorage.setItem(key, '1');} catch {}}, {once:true});
   $('world-event-close').onclick = () => dialog.close();
   dialog.showModal();
 }
+
+document.addEventListener('replay-world-event', e => showWorldEvent(e.detail, true));
 
 function render(next) {
   state = next;

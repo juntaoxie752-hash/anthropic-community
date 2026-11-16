@@ -6,7 +6,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "test": "node --test tests/*.test.js",
-    "check": "node --check src/worker.js && node --check public/app.js && node --check public/game.js && node --check public/game-touch.js && node --check public/workforce.js && node --check public/share.js && node --check public/rewards.js && node --check public/session.js && node --check public/thread.js && wrangler deploy --dry-run"
+    "check": "node --check src/worker.js && node --check public/app.js && node --check public/game.js && node --check public/game-social.js && node --check public/game-touch.js && node --check public/workforce.js && node --check public/share.js && node --check public/rewards.js && node --check public/session.js && node --check public/thread.js && wrangler deploy --dry-run"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.14",
