@@ -292,3 +292,7 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
  .slop-saas-banner{font-size:16px;margin-top:6px}.bubble-goal-copy{font-size:11px}
  .action-visual,.toilet-scene{height:174px;min-height:174px}
 }
+
+/* Rapid taps trigger game actions without double-tap zoom; pan and pinch remain available. */
+.bubble-game,.bubble-game button,.bubble-game a{touch-action:manipulation}
+.main-action,.upgrade-open,.toilet-button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
