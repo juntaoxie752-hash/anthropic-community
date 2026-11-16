@@ -33,6 +33,19 @@ test('board ranks sales, hides identity, saves names and archives immutable even
   const hidden=await call('bubble_board',{},'leader-12');assert.equal(hidden.me.excluded,true);assert.equal(hidden.me.contributed,1012);assert.equal(hidden.me.rank,null);
   await db.exec(cleanup);assert.equal((await call('bubble_board')).items[0].contributed,1002);
   assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-12'")).rows[0].arr,777);
+  // Only original excluded leaders lose cash, inventory and compute; keep the rest.
+  await db.exec("alter table community.bubble_world add column if not exists auto_paused boolean not null default false; update community.bubble_players set slop=7,auto=3,data_centers=2,workspace=true,algorithm_level=2,influencers=4,funding_round=2,capacity=1000; insert into community.bubble_players(visitor,contributed,arr) values('new-leader',999999,444)");
+  const eventSql=await readFile(new URL('../supabase/020_binance_event.sql',import.meta.url),'utf8');
+  await db.exec(eventSql);
+  const affected=(await db.query("select * from community.bubble_players where visitor='leader-12'")).rows[0];
+  for(const key of ['arr','slop','auto','data_centers'])assert.equal(affected[key],0);
+  assert.equal(affected.workspace,true);assert.equal(affected.algorithm_level,2);assert.equal(affected.influencers,4);assert.equal(affected.funding_round,2);assert.equal(affected.contributed,1012);
+  assert.equal((await db.query("select arr from community.bubble_players where visitor='new-leader'")).rows[0].arr,444);
+  assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-7'")).rows[0].arr,777);
+  assert.equal((await db.query("select count(*)::int n from community.bubble_event_player_snapshots")).rows[0].n,5);
+  await db.exec("update community.bubble_players set arr=123 where visitor='leader-12'");
+  await db.exec(eventSql);assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-12'")).rows[0].arr,123);
+  assert.equal((await call('bubble_events')).items.filter(e=>e.id==='binance-hack-2026-11-16').length,1);
   await db.exec('set role anon');await assert.rejects(call('bubble_board'));await assert.rejects(db.query('select * from community.bubble_events'));
  }finally{await db.close();}
 });
