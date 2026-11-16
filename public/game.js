@@ -258,17 +258,26 @@ function goldBurst(count) {
   }
 }
 
-function workspaceResult(next) {
-  if (!next.rolled || !next.player.workspace || next.duplicate) return;
-  const stage = $('poke-stage'), tier = next.rollTier;
-  const title = tier === 'high' ? 'SLOP JACKPOT!' : tier === 'low' ? 'CONTEXT COLLAPSE' : 'WORKSPACE OUTPUT';
+function workspaceNotice(title, message, tier = 'normal') {
+  const scene = $('poke-stage').querySelector('.action-visual');
+  scene.querySelector('.workspace-result')?.remove();
   const result = document.createElement('div');
   result.className = `workspace-result ${tier}`;
   const label = document.createElement('small'), amount = document.createElement('strong');
-  label.textContent = title; amount.textContent = `+${next.produced.toLocaleString('en-US')} slop`;
-  result.append(label, amount);
-  stage.querySelector('.workspace-result')?.remove();
-  stage.querySelector('.action-visual').append(result);
+  label.textContent = title; amount.textContent = message;
+  result.append(label, amount); scene.append(result);
+  return result;
+}
+function workspaceResult(next) {
+  if (!next.player.workspace || next.duplicate) return;
+  if (!next.rolled) {
+    const notice = workspaceNotice('WORKSPACE PAUSED', 'Sell slop first', 'low');
+    setTimeout(() => notice.remove(), 2400);
+    return;
+  }
+  const stage = $('poke-stage'), tier = next.rollTier;
+  const title = tier === 'high' ? 'SLOP JACKPOT!' : tier === 'low' ? 'CONTEXT COLLAPSE' : 'WORKSPACE OUTPUT';
+  const result = workspaceNotice(title, `+${next.produced.toLocaleString('en-US')} slop`, tier);
   const overflow = next.overflow ? ` · Rolled ${next.rolled}, ${next.overflow} overflowed. Upgrade your bowl.` : '';
   flashStatus(`${title} · +${next.produced} slop${overflow}`);
   setTimeout(() => result.remove(), 2400);
@@ -295,6 +304,7 @@ async function act(action) {
   busy = true;
   if (action === 'bubble_make') {
     pokeImpact();
+    if (state.player.workspace) workspaceNotice('AI NATIVE WORKSPACE', 'Generating…', 'pending');
     // Immediate visual feedback; inventory is still credited only by the server.
     if (BigInt(state.player.slop) < BigInt(state.player.capacity)) setTimeout(pokeDrop, 160);
   }
@@ -314,6 +324,10 @@ async function act(action) {
     }
     render(next);
   } catch (error) {
+    if (action === 'bubble_make' && state.player.workspace) {
+      const notice = workspaceNotice('TRY AGAIN', 'Connection interrupted', 'low');
+      setTimeout(() => notice.remove(), 2400);
+    }
     $('game-status').textContent = error.message;
   } finally {
     busy = false;

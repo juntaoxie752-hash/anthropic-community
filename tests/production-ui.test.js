@@ -26,7 +26,7 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
    if(action==='bubble_buy_center') {data.player.dataCenters++;data.player.totalChips+=128;data.player.arr-=data.shop.centerCost;}
    if(action==='bubble_buy_workspace') {data.player.workspace=true;data.player.arr-=7000;data.shop.workspaceCost=null;}
    if(action==='bubble_buy_algorithm') {data.player.algorithmLevel++;data.player.productionInterval*=.8;data.player.arr-=data.shop.algorithmCost;data.shop.algorithmCost*=2;data.shop.nextInterval=data.player.productionInterval*.8;}
-   if(action==='bubble_make') {data.rolled=forcedRoll;data.produced=Math.min(forcedRoll,data.player.capacity-data.player.slop);data.overflow=data.rolled-data.produced;data.player.slop+=data.produced;data.rollTier=forcedRoll<=10?'low':'high';}
+   if(action==='bubble_make' && data.player.slop<data.player.capacity) {data.rolled=forcedRoll;data.produced=Math.min(forcedRoll,data.player.capacity-data.player.slop);data.overflow=data.rolled-data.produced;data.player.slop+=data.produced;data.rollTier=forcedRoll<=10?'low':'high';}
    return {ok:true,json:async()=>structuredClone(data)};
   };
   window.matchMedia=()=>({matches:false});
@@ -56,12 +56,17 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   assert.match(q('buy-algorithm').textContent,/4s → 3.2s/);
   q('buy-workspace').click();await nextTurn();assert.equal(q('buy-workspace').disabled,true);
   assert.match(q('production-perks').textContent,/workspace active/);
-  q('production-shop').close();q('make-slop').click();await nextTurn();
+  q('production-shop').close();q('make-slop').click();
+  assert.match(window.document.querySelector('.workspace-result.pending').textContent,/Generating/);
+  await nextTurn();
   assert.equal(window.document.querySelector('.workspace-result.high strong').textContent,'+900 slop');
   assert.equal(window.document.querySelectorAll('.workspace-spark').length,12);
   forcedRoll=3;q('make-slop').click();await nextTurn();
   assert.equal(window.document.querySelector('.workspace-result.low strong').textContent,'+3 slop');
   assert.match(q('game-status').textContent,/CONTEXT COLLAPSE/);
+  data.player.slop=data.player.capacity;
+  q('make-slop').click();await nextTurn();
+  assert.match(window.document.querySelector('.workspace-result.low').textContent,/Sell slop first/);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;
