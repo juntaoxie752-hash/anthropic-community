@@ -1,6 +1,11 @@
 import {ensureSession} from './session.js';
 let claiming;
 export function displayShareReward(data) {
+ document.querySelectorAll('[data-share-bonus]').forEach(el => {
+  el.textContent = data.shareClaimed ? 'Claimed' : '+$50M';
+  el.title = data.shareClaimed ? 'One-time share credits already received' : 'One-time share credits';
+  el.classList.toggle('claimed',data.shareClaimed);
+ });
  document.querySelectorAll('[data-share-reward]').forEach(el => {
   el.textContent = data.shareClaimed ? 'Share reward claimed' : 'First share +$50M';
   el.classList.toggle('claimed',data.shareClaimed);
