@@ -121,6 +121,13 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   q('make-slop').click();await nextTurn();assert.equal(q('world-event').open,false);
   window.document.dispatchEvent(new window.CustomEvent('replay-world-event',{detail:shock}));
   assert.equal(q('world-event').open,true);q('world-event-close').click();
+  data.world.autoPaused=true;
+  q('make-slop').click();await nextTurn();
+  assert.equal(q('production-outage').hidden,false);
+  assert.equal(q('chip-workshop').dataset.mode,'paused');
+  assert.equal(q('influencer-workshop').dataset.mode,'paused');
+  assert.match(q('chip-work-state').textContent,/auto production paused/);
+  assert.equal(q('make-slop').disabled,false);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;

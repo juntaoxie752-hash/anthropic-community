@@ -180,3 +180,27 @@ test('higher funding prices preserve owned rounds, charge quoted prices once and
   await assert.rejects(call('bubble_buy_bowl',{},'new-player'),/Not enough ARR/);
  }finally{await db.close();}
 });
+
+
+test('global outage resets valuation once, preserves players and stops all automatic accrual while manual play works', async () => {
+ const {db,call}=await setup();
+ try {
+  await call('bubble_state');
+  for(const f of ['012_datacenter_event.sql','014_leaderboard_events.sql','015_funding_prices.sql']) await db.exec(await readFile(new URL('../supabase/'+f,import.meta.url),'utf8'));
+  await db.exec("update community.bubble_players set arr=1234567,slop=12,contributed=987,auto=10,data_centers=2,capacity=1000,funding_round=2,algorithm_level=3,influencers=2,workspace=true,auto_accrued_at=now()-interval '1 day' where visitor='factory'; update community.bubble_world set contributed=1500000000000,burst_at=now()");
+  const before=(await db.query("select * from community.bubble_players where visitor='factory'")).rows[0];
+  const sql=await readFile(new URL('../supabase/016_global_outage.sql',import.meta.url),'utf8');
+  await db.exec(sql);
+  assert.deepEqual((await db.query("select * from community.bubble_players where visitor='factory'")).rows[0],before);
+  let s=await call('bubble_state');assert.equal(s.world.contributed,0);assert.equal(s.world.burst,false);assert.equal(s.world.autoPaused,true);
+  assert.equal(s.player.slop,12);assert.equal(s.player.arr,1234567);assert.equal(s.player.contributed,987);
+  assert.equal(s.world.event.id,'microsoft-outage-2026-11-16');
+  await db.exec("update community.bubble_players set auto_accrued_at=now()-interval '1 day' where visitor='factory'");
+  s=await call('bubble_state');assert.equal(s.player.slop,12);
+  s=await call('bubble_buy_center');assert.equal(s.player.dataCenters,3);
+  s=await call('bubble_make');assert.ok(s.produced>0);
+  s=await call('bubble_flush');assert.ok(s.minted>0);const total=s.world.contributed;
+  await db.exec(sql);s=await call('bubble_state');assert.equal(s.world.contributed,total);assert.equal(s.player.slop,0);
+  assert.equal((await db.query("select count(*)::int n from community.bubble_events where id='microsoft-outage-2026-11-16'")).rows[0].n,1);
+ } finally {await db.close();}
+});

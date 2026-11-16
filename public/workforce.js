@@ -9,8 +9,9 @@ export function renderWorkforce(data, connected = true) {
   const interval = data.player.productionInterval ?? 5;
   const influencers = data.player.influencers ?? (data.player.double ? 1 : 0);
   const full = BigInt(data.player.slop) >= BigInt(data.player.capacity);
-  const selling = influencers > 0 && connected;
-  const computing = chips > 0 && !full && connected;
+  const paused = !!data.world?.autoPaused;
+  const selling = influencers > 0 && connected && !paused;
+  const computing = chips > 0 && !full && connected && !paused;
   const rig = get('chip-rig'), desks = get('influencer-desks');
   if (rig.dataset.count !== String(chips)) {
     rig.dataset.count = chips;
@@ -46,9 +47,9 @@ export function renderWorkforce(data, connected = true) {
   get('influencer-workshop').dataset.mode = selling ? 'working' : influencers === 0 ? 'empty' : 'paused';
   get('chip-count').textContent = `${chips.toLocaleString('en-US')} NVIDIA B300 chip${chips === 1 ? '' : 's'}`;
   get('influencer-count').textContent = `${influencers.toLocaleString('en-US')} AI influencer${influencers === 1 ? '' : 's'}`;
-  get('chip-work-state').textContent = !connected ? 'Reconnecting…' : chips === 0 ? 'Buy a cluster to start production.'
+  get('chip-work-state').textContent = !connected ? 'Reconnecting…' : paused ? 'Global outage · auto production paused' : chips === 0 ? 'Buy a cluster to start production.'
     : full ? 'Bowl full · compute paused' : `Working · +${chips.toLocaleString('en-US')} slop / ${formatInterval(interval)}`;
-  get('influencer-work-state').textContent = !connected ? 'Reconnecting…' : influencers === 0 ? 'Hire an influencer to start the hype.'
+  get('influencer-work-state').textContent = !connected ? 'Reconnecting…' : paused ? 'Global outage · posting paused' : influencers === 0 ? 'Hire an influencer to start the hype.'
     : `Working & posting hype · ${data.player.saleMultiplier ?? 1 + influencers}× sales`;
   get('funding-round').textContent = data.player.fundingLabel ?? 'Seed';
   const amount = data.player.roundFunding;

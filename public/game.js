@@ -1,5 +1,5 @@
 import {ensureSession} from './session.js';
-import {renderWorkforce, formatInterval} from './workforce.js';
+import {renderWorkforce, formatInterval} from './workforce.js?v=outage-1';
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
   const response = await fetch(`/api/${path}`, {
@@ -74,6 +74,9 @@ function showWorldEvent(event, replay = false) {
   shownWorldEvent = event.id;
   $('world-event-title').textContent = event.title || 'Data center down. Bubble deflated.';
   $('world-event-description').textContent = event.description || 'In this fictional game scenario, Iran bombs a data center. The AI bubble takes a massive hit.';
+  dialog.querySelector('.world-event-art').textContent = event.icon || '🏢💥';
+  dialog.querySelector('.world-event-impact').textContent = event.effect || 'Shared AI Bubble valuation';
+  dialog.querySelector('.world-event-disclaimer').textContent = event.disclaimer || 'Game satire, not a real-world news report. Your cash, upgrades and lifetime contribution are unchanged.';
   $('world-event-loss').textContent = `−${money(event.loss)}`;
   $('world-event-values').textContent = `${money(event.before)} → ${money(event.after)}`;
   dialog.addEventListener('close', () => {try {localStorage.setItem(key, '1');} catch {}}, {once:true});
@@ -86,6 +89,7 @@ document.addEventListener('replay-world-event', e => showWorldEvent(e.detail, tr
 function render(next) {
   state = next;
   showWorldEvent(next.world.event);
+  $('production-outage').hidden = !next.world.autoPaused;
   const contributed = BigInt(next.world.contributed);
   const ratio = Math.min(1, Number(contributed) / Number(GOAL));
   const slop = BigInt(next.player.slop);
