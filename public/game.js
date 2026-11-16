@@ -154,7 +154,7 @@ function render(next) {
   $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Power & water crisis: starts at $1.792M, price triples each purchase. Includes DeepSeek upgrades.`;
   $('buy-algorithm').querySelector('span').textContent = next.shop?.nextInterval == null
     ? `All B300 chips and data centers: ${formatInterval(interval)} per cycle.`
-    : `All B300 chips & data centers: ${formatInterval(interval)} → ${formatInterval(next.shop.nextInterval)}. 20% shorter every level. Price doubles.`;
+    : `All B300 chips & data centers: ${formatInterval(interval)} → ${formatInterval(next.shop.nextInterval)}. 20% shorter every level. ${Number(next.shop.nextInterval) < 3 ? 'Sub-3s premium: $14M to cross the threshold, then price grows 10× per level.' : 'Prices double until the next upgrade enters sub-3s; then $14M, followed by 10× per level.'}`;
   const bowlBtn = $('buy-bowl');
   const fundingCost = next.shop ? next.shop.fundingCost : next.world.bowlCost;
   const fundingMaxed = fundingCost == null;

@@ -282,3 +282,26 @@ test('influencer bonuses halve, quotes match sales, fractional ARR floors once a
   const s=await call('bubble_state');assert.ok(s.player.saleMultiplier<3);assert.equal(s.player.saleValue,'209');assert.equal(s.shop.nextInfluencerBonus,null);
  }finally{await db.close();}
 });
+
+
+test('DeepSeek sub-three-second upgrades cost 14M then 10x per level, preserving progress and safe large quotes', async () => {
+ const {db,call}=await setup();
+ try {
+  for(const f of ['012_datacenter_event.sql','014_leaderboard_events.sql','016_global_outage.sql','017_neo_cloud.sql','021_utility_crisis.sql','022_influencer_returns.sql'])await db.exec(await readFile(new URL('../supabase/'+f,import.meta.url),'utf8'));
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set arr=2000000000,algorithm_level=2 where visitor='factory'");
+  const sql=await readFile(new URL('../supabase/023_deepseek_late_prices.sql',import.meta.url),'utf8');await db.exec(sql);
+  let s=await call('bubble_state');assert.equal(s.player.algorithmLevel,2);assert.equal(s.player.productionInterval,3.2);assert.equal(s.player.arr,2000000000);
+  assert.equal(s.shop.algorithmCost,'14000000');assert.equal(s.shop.nextInterval,2.56);
+  const id=crypto.randomUUID();s=await call('bubble_buy_algorithm',{requestId:id});assert.equal(s.player.arr,1986000000);assert.equal(s.shop.algorithmCost,'140000000');assert.equal(s.player.productionInterval,2.56);
+  s=await call('bubble_buy_algorithm',{requestId:id});assert.equal(s.player.arr,1986000000);assert.equal(s.player.algorithmLevel,3);
+  s=await call('bubble_buy_algorithm');assert.equal(s.player.arr,1846000000);assert.equal(s.shop.algorithmCost,'1400000000');
+  for(const [level,cost] of [[0,'350000'],[1,'700000'],[39,(14000000n*10n**37n).toString()]]) {
+   await db.query("update community.bubble_players set algorithm_level=$1,arr=0 where visitor='factory'",[level]);
+   s=await call('bubble_state');assert.equal(s.shop.algorithmCost,cost);
+   await assert.rejects(call('bubble_buy_algorithm'),/Not enough ARR/);
+  }
+  await db.exec("update community.bubble_players set algorithm_level=40 where visitor='factory'");
+  s=await call('bubble_state');assert.equal(s.shop.algorithmCost,null);await assert.rejects(call('bubble_buy_algorithm'),/fully optimized/);
+ }finally{await db.close();}
+});
