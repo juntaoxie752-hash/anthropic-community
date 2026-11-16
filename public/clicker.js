@@ -47,13 +47,10 @@ function connect(){
 }
 function animate(){
  if(reduced.matches)return;
- const hand=$('gesture'),logo=document.querySelector('.hero-logo'),stage=$('poke-stage');
+ const hand=$('gesture'),logo=document.querySelector('.hero-logo');
  for(const el of [hand,logo])el.getAnimations().forEach(a=>a.cancel());
  hand.animate([{transform:'translateY(0) rotate(-6deg)'},{transform:'translateY(18px) rotate(-15deg)',offset:.18},{transform:'translateY(-64px) rotate(5deg) scale(1.12)',offset:.32},{transform:'translateY(-55px) rotate(-3deg)',offset:.46},{transform:'translateY(9px) rotate(-8deg)',offset:.72},{transform:'translateY(0) rotate(-6deg)'}],{duration:520,easing:'cubic-bezier(.2,.8,.3,1)'});
  logo.animate([{transform:'scale(1)'},{transform:'scale(.65,1.12) rotate(-18deg)',offset:.2},{transform:'scale(1.23,.82) rotate(14deg)',offset:.46},{transform:'scale(.94,1.06) rotate(-5deg)',offset:.72},{transform:'scale(1)'}],{delay:150,duration:450,easing:'ease-out'});
- if(stage.querySelectorAll('.poop').length>=12)return;
- const poop=document.createElement('span');poop.className='poop';poop.textContent='💩';poop.setAttribute('aria-hidden','true');poop.style.cssText='left:50%;top:15%';stage.append(poop);
- const motion=poop.animate([{transform:'translate(-50%,0) scale(.2)',opacity:0},{transform:'translate(-50%,-30px) scale(1.2)',opacity:1,offset:.2},{transform:`translate(${Math.random()*160-80}px,220px) rotate(${Math.random()*100-50}deg) scale(.7)`,opacity:0}],{delay:140,duration:850,easing:'cubic-bezier(.3,0,.7,.5)'});motion.onfinish=()=>poop.remove();
 }
 function poke(fromHold=false){if(!ready||closed)return;pending++;persist();count();animate();if(fromHold)document.dispatchEvent(new CustomEvent('game-sound',{detail:'generate'}));if(!sending)setTimeout(flush,180);}
 button.addEventListener('click',event=>{if(event.detail===0||!held)poke();});
