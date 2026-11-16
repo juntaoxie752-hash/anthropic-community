@@ -13,7 +13,7 @@ test('share UI claims on copied links or platform clicks, not opening; reports c
   const context=vm.createContext({document:w.document,location:w.location,URL,MARK,window:{open:()=>null},
    navigator:{userAgent:'test',clipboard:{writeText:async()=>{if(fail)throw Error('denied');}}},
    rewardState:async()=>({shareClaimed:false}),
-   claimShareReward:async()=>({reward:++claims===1?50000000:0})});
+   claimShareReward:async()=>({reward:++claims===1?500000:0})});
   const code=(await readFile(new URL('../public/share.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'').replaceAll('export ','');
   vm.runInContext(code,context);
   w.document.querySelector('[data-share]').click();await settle();assert.equal(claims,0);
