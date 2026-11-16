@@ -128,6 +128,11 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   assert.equal(q('influencer-workshop').dataset.mode,'paused');
   assert.match(q('chip-work-state').textContent,/auto production paused/);
   assert.equal(q('make-slop').disabled,false);
+  data.player.influencers=2;data.player.saleMultiplier=2.5;data.player.saleValue='175';data.shop.nextInfluencerBonus=.25;
+  q('make-slop').click();await nextTurn();
+  assert.match(q('buy-double').textContent,/2.5× sale value/);
+  assert.match(q('buy-double').textContent,/Next hire adds \+0.25×/);
+  assert.match(q('flush-note').textContent,/\$175/);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;

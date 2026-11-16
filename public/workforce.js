@@ -1,3 +1,7 @@
+export const formatMultiplier = value => {
+ const n=Number(value);
+ return n<3 && n>2.999999 ? '<3' : n.toLocaleString('en-US',{maximumFractionDigits:6});
+};
 // Decorative workers represent owned upgrades, never extra production or posts.
 // Cap visible sprites while keeping the actual owned count exact.
 export const formatInterval = seconds => `${Number(seconds).toLocaleString('en-US', {maximumSignificantDigits: 3})}s`;
@@ -50,7 +54,7 @@ export function renderWorkforce(data, connected = true) {
   get('chip-work-state').textContent = !connected ? 'Reconnecting…' : paused ? 'Global outage · auto production paused' : chips === 0 ? 'Buy a cluster to start production.'
     : full ? 'Bowl full · compute paused' : `Working · +${chips.toLocaleString('en-US')} slop / ${formatInterval(interval)}`;
   get('influencer-work-state').textContent = !connected ? 'Reconnecting…' : paused ? 'Global outage · posting paused' : influencers === 0 ? 'Hire an influencer to start the hype.'
-    : `Working & posting hype · ${data.player.saleMultiplier ?? 1 + influencers}× sales`;
+    : `Working & posting hype · ${formatMultiplier(data.player.saleMultiplier ?? 3 - 2 / 2 ** influencers)}× sales`;
   get('funding-round').textContent = data.player.fundingLabel ?? 'Seed';
   const amount = data.player.roundFunding;
   get('funding-amount').textContent = amount == null ? 'Loading round amount…'

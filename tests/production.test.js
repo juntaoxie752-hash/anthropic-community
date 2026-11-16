@@ -233,3 +233,52 @@ test('Neo Cloud resets compute once, resumes production and enforces escalating 
   assert.equal((await db.query("select count(*)::int n from community.bubble_events where id='neo-cloud-implosion-2026-11-16'")).rows[0].n,1);
  } finally {await db.close();}
 });
+
+
+test('utility crisis raises initial and repeat center costs without resetting assets or overflowing at high levels', async () => {
+ const {db,call}=await setup();
+ try {
+  for(const f of ['012_datacenter_event.sql','014_leaderboard_events.sql','016_global_outage.sql','017_neo_cloud.sql'])await db.exec(await readFile(new URL('../supabase/'+f,import.meta.url),'utf8'));
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set arr=100000000,auto=3,data_centers=2,slop=10,capacity=1000 where visitor='factory'");
+  const sql=await readFile(new URL('../supabase/021_utility_crisis.sql',import.meta.url),'utf8');
+  await db.exec(sql);
+  let s=await call('bubble_state');assert.equal(s.player.arr,100000000);assert.equal(s.player.auto,3);assert.equal(s.player.dataCenters,2);
+  assert.equal(s.world.autoPaused,false);assert.equal(s.shop.centerCost,'16128000');
+  assert.equal((await call('bubble_state',{},'new')).shop.centerCost,'1792000');
+  await assert.rejects(call('bubble_buy_center',{},'new'),/Not enough ARR/);
+  const id=crypto.randomUUID();s=await call('bubble_buy_center',{requestId:id});
+  assert.equal(s.player.arr,83872000);assert.equal(s.shop.centerCost,'48384000');
+  s=await call('bubble_buy_center',{requestId:id});assert.equal(s.player.dataCenters,3);assert.equal(s.player.arr,83872000);
+  await db.exec(sql);s=await call('bubble_state');assert.equal(s.player.dataCenters,3);
+  await db.exec("update community.bubble_players set data_centers=31 where visitor='factory'");
+  s=await call('bubble_state');assert.equal(BigInt(s.shop.centerCost),1792000n*3n**31n);
+  await assert.rejects(call('bubble_buy_center'),/Not enough ARR/);
+  await db.exec("update community.bubble_players set data_centers=32 where visitor='factory'");
+  s=await call('bubble_state');assert.equal(s.shop.centerCost,null);await assert.rejects(call('bubble_buy_center'),/limit reached/);
+  assert.equal((await db.query("select count(*)::int n from community.bubble_events where id='us-utility-crisis-2026-11-16'")).rows[0].n,1);
+ }finally{await db.close();}
+});
+
+
+test('influencer bonuses halve, quotes match sales, fractional ARR floors once and retries do not double credit', async () => {
+ const {db,call}=await setup();
+ try {
+  for(const f of ['012_datacenter_event.sql','014_leaderboard_events.sql','016_global_outage.sql','017_neo_cloud.sql','021_utility_crisis.sql','022_influencer_returns.sql'])await db.exec(await readFile(new URL('../supabase/'+f,import.meta.url),'utf8'));
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set arr=1000000 where visitor='factory'");
+  for(const [i,multiplier] of [1,2,2.5,2.75,2.875].entries()) {
+   let s=await call('bubble_state');assert.equal(s.player.saleMultiplier,multiplier);assert.equal(s.shop.nextInfluencerBonus,1/2**i);
+   for(const slop of [1,9,10]) {
+    await db.query("update community.bubble_players set slop=$1 where visitor='factory'",[slop]);
+    s=await call('bubble_state');const quote=Number(s.player.saleValue),before=s.player.arr;
+    assert.equal(quote,Math.floor(slop*70*multiplier*(slop===10?5:1)));
+    const id=crypto.randomUUID();s=await call('bubble_flush',{requestId:id});assert.equal(s.minted,quote);assert.equal(s.player.arr,before+quote);
+    s=await call('bubble_flush',{requestId:id});assert.equal(s.minted,0);assert.equal(s.player.arr,before+quote);
+   }
+   if(i<4) await call('bubble_buy_double');
+  }
+  await db.exec("update community.bubble_players set influencers=40,slop=1 where visitor='factory'");
+  const s=await call('bubble_state');assert.ok(s.player.saleMultiplier<3);assert.equal(s.player.saleValue,'209');assert.equal(s.shop.nextInfluencerBonus,null);
+ }finally{await db.close();}
+});

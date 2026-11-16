@@ -1,5 +1,5 @@
 import {ensureSession} from './session.js';
-import {renderWorkforce, formatInterval} from './workforce.js?v=outage-1';
+import {renderWorkforce, formatInterval, formatMultiplier} from './workforce.js?v=influencer-1';
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
   const response = await fetch(`/api/${path}`, {
@@ -94,11 +94,13 @@ function render(next) {
   const ratio = Math.min(1, Number(contributed) / Number(GOAL));
   const slop = BigInt(next.player.slop);
   const arr = BigInt(next.player.arr);
-  const multiplier = BigInt(next.player.saleMultiplier ?? (next.player.double ? 2 : 1));
   const influencers = next.player.influencers ?? (next.player.double ? 1 : 0);
   const round = next.player.fundingRound ?? 0;
   const capacity = BigInt(next.player.capacity ?? 10);
   const full = slop >= capacity;
+  const denominator = 2n ** BigInt(influencers);
+  const saleValue = next.player.saleValue ?? (slop * RATE * (full ? 5n : 1n) * (3n * denominator - 2n) / denominator);
+  const multiplier = formatMultiplier(next.player.saleMultiplier ?? 3 - 2 / 2 ** influencers);
   $('slop-balance').textContent = `${slop.toLocaleString('en-US')} / ${capacity.toLocaleString('en-US')}`;
   $('slop-balance').parentElement.classList.toggle('bowl-full', full);
   $('machine').classList.toggle('bowl-full', full);
@@ -116,8 +118,8 @@ function render(next) {
   $('flush-note').textContent = slop === 0n
     ? 'Flush me'
     : slop === capacity
-      ? `Full! Flush ${slop} → ${exact(slop * RATE * 5n * multiplier)}`
-      : `Flush ${slop} → ${exact(slop * RATE * multiplier)}`;
+      ? `Full! Flush ${slop} → ${exact(saleValue)}`
+      : `Flush ${slop} → ${exact(saleValue)}`;
   $('toilet').classList.toggle('has-slop', slop > 0n);
   $('toilet').style.width = `${140 + round * 9}px`;
   $('toilet').style.height = `${166 + round * 7}px`;
@@ -127,7 +129,7 @@ function render(next) {
   const influencerMaxed = influencerCost == null || (!next.shop && next.player.double);
   doubleBtn.classList.toggle('owned', influencerMaxed);
   doubleBtn.disabled = !ready || busy || influencerMaxed || arr < BigInt(influencerCost ?? 0);
-  doubleBtn.querySelector('span').textContent = `Owned ×${influencers} · ${multiplier}× sale value. Each hire adds +1×.`;
+  doubleBtn.querySelector('span').textContent = `Owned ×${influencers} · ${multiplier}× sale value. ${influencerMaxed ? 'Roster complete.' : `Next hire adds +${Number(next.shop?.nextInfluencerBonus ?? 1 / 2 ** influencers).toLocaleString('en-US',{maximumSignificantDigits:4})}×. Each bonus halves.`}`;
   doubleBtn.querySelector('em').textContent = influencerMaxed ? 'Roster complete' : `Hire another · ${exact(influencerCost)}`;
   const autoBtn = $('buy-auto');
   const autoCost = next.shop?.autoCost ?? next.world.autoCost;
@@ -149,7 +151,7 @@ function render(next) {
     button.querySelector('em').textContent = owned ? (id === 'buy-workspace' ? 'Owned · active' : id === 'buy-center' ? 'Data center limit reached · 32 / 32' : 'Fully optimized')
       : cost == null ? 'Loading price…' : `${label} · ${exact(cost)}`;
   }
-  $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Price doubles each purchase. Includes DeepSeek upgrades.`;
+  $('buy-center').querySelector('span').textContent = `128 B300 chips. +128 slop / ${formatInterval(interval)}. Power & water crisis: starts at $1.792M, price triples each purchase. Includes DeepSeek upgrades.`;
   $('buy-algorithm').querySelector('span').textContent = next.shop?.nextInterval == null
     ? `All B300 chips and data centers: ${formatInterval(interval)} per cycle.`
     : `All B300 chips & data centers: ${formatInterval(interval)} → ${formatInterval(next.shop.nextInterval)}. 20% shorter every level. Price doubles.`;
@@ -379,7 +381,7 @@ async function drainActions() {
         goldBurst(Number(next.flushed));
         flyToBubble(next.minted);
         const flushed = BigInt(next.flushed), total = BigInt(next.minted);
-        flashStatus(`${flushed.toLocaleString('en-US')} slop sold for ${exact(total)} of “ARR” · ${Number(total / (flushed * RATE))}× total value.`);
+        flashStatus(`${flushed.toLocaleString('en-US')} slop sold for ${exact(total)} of “ARR” · ${(Number(total) / Number(flushed * RATE)).toLocaleString('en-US',{maximumFractionDigits:4})}× total value.`);
       }
       render(next);
       // Leave a short batching window under sustained tapping, below the API request limit.
