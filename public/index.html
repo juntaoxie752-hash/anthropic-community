@@ -47,18 +47,28 @@
                 <button class="main-action primary" id="make-slop" type="button" disabled aria-label="Generate AI slop"><span>Generate AI slop</span></button>
                 <button class="upgrade-open" id="open-production-shop" type="button" aria-haspopup="dialog" aria-controls="production-shop">Upgrade</button>
               </div>
+              <section class="work-status chip-status" id="chip-workshop" data-mode="empty" aria-label="NVIDIA chip workforce">
+                <div class="worker-art chip-rig" id="chip-rig" aria-hidden="true"></div>
+                <strong id="chip-count">0 NVIDIA B300 chips</strong>
+                <span class="work-caption" id="chip-work-state">Buy a cluster to start production.</span>
+              </section>
             </div>
             <div class="action-zone">
               <div class="toilet-scene"><button class="toilet-button main-visual" id="flush-slop" type="button" disabled aria-label="Sell as super intelligence">
                 <span class="toilet" id="toilet" aria-hidden="true"><img src="/assets/toilet.svg" alt="" onerror="this.parentElement.innerHTML='<span>💩</span><b></b>'"><i class="flush-water"></i><i class="bowl-slop">💩</i></span>
               </button>
                 <span class="slop-meter" id="slop-meter" title="Toilet capacity"><b id="slop-balance">0 / 10</b><span>AI Slop</span></span>
-                <span class="influencer-count" id="influencer-count">0 AI influencers · 1× sales</span>
+                <div class="funding-status" aria-label="Current funding round"><strong id="funding-round">Seed</strong><span id="funding-amount">Bootstrapped · $0</span></div>
               </div>
               <div class="action-buttons">
                 <button class="main-action primary" id="flush-slop-label" type="button" disabled aria-label="Sell as super intelligence"><span>Sell as <q>SI</q></span></button>
                 <button class="upgrade-open" id="open-toilet-shop" type="button" aria-haspopup="dialog" aria-controls="toilet-shop">Upgrade</button>
               </div>
+              <section class="work-status influencer-status" id="influencer-workshop" data-mode="empty" aria-label="AI influencer workforce">
+                <div class="worker-art influencer-desks" id="influencer-desks" aria-hidden="true"></div>
+                <strong id="influencer-count">0 AI influencers</strong>
+                <span class="work-caption" id="influencer-work-state">Hire an influencer to start the hype.</span>
+              </section>
             </div>
           </div>
 
@@ -68,7 +78,7 @@
           <dialog class="upgrade-shop" id="production-shop" aria-labelledby="production-shop-title">
             <button class="shop-close" type="button" data-close-shop aria-label="Close production upgrades">×</button>
             <div class="eyebrow">SLOP FACTORY</div><h2 id="production-shop-title">Generate faster</h2>
-            <button class="shop-item" id="buy-auto" type="button" disabled><img src="/assets/shop-auto.svg" alt="" onerror="this.style.display='none'"><b>NVIDIA B300 Cluster</b><span>+1 slop / 10s, hands-free.</span><em>Stackable · $1,400</em></button>
+            <button class="shop-item" id="buy-auto" type="button" disabled><img src="/assets/shop-auto.svg" alt="" onerror="this.style.display='none'"><b>NVIDIA B300 Cluster</b><span>+1 slop / 5s, hands-free.</span><em>Stackable · $1,400</em></button>
             <p class="shop-note">More compute. More slop. Same AI Bubble.</p>
           </dialog>
 

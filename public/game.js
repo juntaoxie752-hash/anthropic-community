@@ -1,3 +1,4 @@
+import {renderWorkforce} from './workforce.js';
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
   const response = await fetch(`/api/${path}`, {
@@ -89,7 +90,7 @@ function render(next) {
   $('toilet').classList.toggle('has-slop', slop > 0n);
   $('toilet').style.width = `${140 + round * 9}px`;
   $('toilet').style.height = `${166 + round * 7}px`;
-  $('influencer-count').textContent = `${influencers} AI influencer${influencers === 1 ? '' : 's'} · ${multiplier}× sales`;
+  renderWorkforce(next, ready);
   const doubleBtn = $('buy-double');
   const influencerCost = next.shop ? next.shop.influencerCost : next.world.doubleCost;
   const influencerMaxed = influencerCost == null || (!next.shop && next.player.double);
@@ -280,6 +281,7 @@ async function connect() {
     $('make-slop').disabled = true;
     $('flush-slop').disabled = true;
     $('game-status').textContent = 'The bubble is not connected yet.';
+    if (state) renderWorkforce(state, false);
   }
 }
 
@@ -298,4 +300,4 @@ for (const button of document.querySelectorAll('[data-close-shop]')) button.oncl
 connect();
 tick();
 
-setInterval(() => { if (!document.hidden && ready && !busy) { busy=true; api('bubble_state').then(render).catch(()=>{}).finally(()=>{busy=false;if(state)render(state);}); } },10000);
+setInterval(() => { if (!document.hidden && ready && !busy) { busy=true; api('bubble_state').then(render).catch(()=>{}).finally(()=>{busy=false;if(state)render(state);}); } },5000);
