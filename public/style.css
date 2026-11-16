@@ -365,3 +365,7 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 .sale-ring{position:absolute;width:150px;height:150px;border:2px solid #ffd371;border-radius:50%;box-shadow:0 0 20px #f6b84166,inset 0 0 16px #f6b84133}
 .sale-coin{position:absolute;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid #ffe7a2;background:linear-gradient(135deg,#fff1a6,#eaa02e);color:#80500c;font:bold 14px 'Oxanium',sans-serif;box-shadow:0 0 10px #ffc65866;font-style:normal;will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.sale-cash{filter:none}.sale-cash strong{text-shadow:0 2px 3px #000}}
+
+.game-utility-nav .sound-toggle{width:36px;min-width:36px;padding:7px;flex-shrink:0;color:#cbbba8}.sound-cross{display:none}.is-muted .sound-cross{display:block}.is-muted .sound-waves{display:none}.game-utility-nav .sound-toggle.is-muted{color:#82766b}
+@media(max-width:360px){.game-utility-nav .sound-toggle{width:30px;min-width:30px;padding:5px}.game-utility-nav .hero-share{gap:3px}}
+@media(max-width:360px){.game-utility-nav{gap:3px}.game-utility-nav .game-small-button,.game-utility-nav .hero-share{padding-inline:5px;font-size:9.5px}.game-utility-nav .credit-bonus{font-size:9px}}

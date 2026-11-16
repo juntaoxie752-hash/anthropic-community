@@ -51,7 +51,7 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   const game=(await readFile(new URL('../public/game.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
   const context=vm.createContext({window,document:window.document,fetch:window.fetch,matchMedia:window.matchMedia,
     localStorage:window.localStorage,ensureSession:async()=>({}),setInterval:window.setInterval,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,crypto,BigInt,console,
-    AbortSignal,Element:window.Element,queueMicrotask,structuredClone});
+    CustomEvent:window.CustomEvent,AbortSignal,Element:window.Element,queueMicrotask,structuredClone});
   vm.runInContext(workforce+'\n'+game,context);
   await nextTurn();
   assert.match(q('chip-work-state').textContent,/30 slop \/ 5s/);

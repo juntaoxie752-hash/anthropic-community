@@ -1,5 +1,6 @@
 import {ensureSession} from './session.js';
 import {renderWorkforce, formatInterval, formatMultiplier} from './workforce.js?v=influencer-1';
+const sound = kind => document.dispatchEvent(new CustomEvent('game-sound', {detail:kind}));
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
   const response = await fetch(`/api/${path}`, {
@@ -334,6 +335,7 @@ function workspaceResult(next) {
     : [{transform:'scale(.6)',opacity:0},{transform:'scale(1.12)',opacity:1},{transform:'scale(1)',opacity:1}],
   {duration:450,easing:'ease-out'});
   if (tier === 'high') {
+    sound('jackpot');
     for (let i = 0; i < 12; i++) {
       const spark = document.createElement('i'); spark.className = 'workspace-spark'; spark.setAttribute('aria-hidden','true');
       stage.querySelector('.action-visual').append(spark);
@@ -391,10 +393,12 @@ async function drainActions() {
         if (next.duplicate) $('poke-stage').querySelector('.workspace-result.pending')?.remove();
       }
       if (item.action === 'bubble_flush' && Number(next.minted) > 0) {
+        sound(BigInt(next.flushed) >= BigInt(next.player.capacity) ? 'jackpot' : 'cash');
         saleCelebration(next.minted, BigInt(next.flushed) >= BigInt(next.player.capacity));
         const flushed = BigInt(next.flushed), total = BigInt(next.minted);
         flashStatus(`${flushed.toLocaleString('en-US')} slop sold for ${exact(total)} of “ARR” · ${(Number(total) / Number(flushed * RATE)).toLocaleString('en-US',{maximumFractionDigits:4})}× total value.`);
       }
+      if (item.action.startsWith('bubble_buy_') && !next.duplicate) sound('upgrade');
       render(next);
       // Leave a short batching window under sustained tapping, below the API request limit.
       await new Promise(resolve => setTimeout(resolve, 350));

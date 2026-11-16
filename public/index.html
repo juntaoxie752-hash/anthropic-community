@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=a-slash">
   <link rel="preload" href="/assets/fonts/fugaz-one-regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="/assets/fonts/oxanium-variable.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="/style.css?v=sale-fx-1"><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=sale-fx-1"></script><script type="module" src="/share.js?v=rewards-3"></script><script type="module" src="/game-social.js?v=utility-1"></script>
+  <link rel="stylesheet" href="/style.css?v=audio-1"><script type="module" src="/game-audio.js?v=audio-1"></script><script type="module" src="/app.js"></script><script type="module" src="/game.js?v=audio-1"></script><script type="module" src="/share.js?v=rewards-3"></script><script type="module" src="/game-social.js?v=utility-1"></script>
   <script type="module" src="/game-touch.js?v=touch-2"></script>
 </head>
 <body>
@@ -63,6 +63,7 @@
           <div class="utility-share">
             <button class="hero-share" data-share type="button" aria-label="Share this website">Share <small class="credit-bonus" data-share-bonus title="One-time share credits">+$50K</small></button>
           </div>
+            <button id="sound-toggle" class="game-small-button sound-toggle" type="button" aria-label="Mute sound effects" aria-pressed="true" title="Sound on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-cross" d="m15 9 6 6m0-6-6 6"/></svg></button>
           </nav>
 
           <div class="mini-progress" aria-label="Shared bubble progress toward $1.4T">
