@@ -223,3 +223,9 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 .post-button .credit-bonus,.share-copy-link .credit-bonus{color:#246b39}
 .credit-bonus.claimed{color:#9caaa0;font-size:.72em}
 .share-copy-link .credit-bonus.claimed{color:#506658}
+
+/* Make the countdown and collective goal readable at a glance. */
+.countdown-label{font-family:'Oxanium',sans-serif;font-size:clamp(19px,3vw,28px);font-weight:700;letter-spacing:-.4px;line-height:1.25;color:#fff4ed;margin-bottom:18px;text-shadow:0 2px 8px #8d231c44}
+.mini-progress-copy{gap:12px;flex-wrap:wrap;margin-bottom:6px}.mini-progress-copy span{font-family:'Oxanium',sans-serif;font-size:clamp(16px,2.2vw,21px);letter-spacing:0;text-transform:none;line-height:1.35}.mini-progress-copy strong{white-space:nowrap;margin-left:auto}
+.bubble-goal-copy{font-size:clamp(13px,1.7vw,16px);line-height:1.5;text-align:left;color:#cbb8aa;margin:0 0 12px}
+@media(max-width:520px){.mini-progress-copy{align-items:flex-start;gap:4px 12px}.mini-progress-copy span{flex-basis:100%}.mini-progress-copy strong{margin-left:0}.countdown-label{margin-bottom:14px}}
