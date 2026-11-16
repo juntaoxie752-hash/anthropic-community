@@ -210,3 +210,10 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 .toilet-readout{min-width:0;flex:1;max-width:190px}.toilet-readout .flush-note{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:700px){.data-center-art{width:138px}.compute-fleet.has-center{padding-top:43px}.toilet-readout .flush-note{font-size:11px}}
 @media(prefers-reduced-motion:reduce){[data-mode=working] .data-center-art img{animation:none}}
+
+/* Bubble grows from the right edge toward the left. */
+.mini-progress-track>span{left:auto;right:0;transform-origin:right center;background:linear-gradient(270deg,#e1442b,#ef7a3c 45%,#ffcf7a)}
+.reward-strip{display:grid;grid-template-columns:1.5fr 1fr 1fr;width:100%;gap:8px;padding:14px 0;border-block:1px solid #493326;text-align:left}
+.reward-strip>a,.reward-strip>button{display:flex;flex-direction:column;gap:5px;padding:10px 12px;background:transparent;border:0;border-radius:8px;color:inherit;text-align:left;min-width:0}
+.reward-strip>a:hover,.reward-strip>button:hover{background:#281c15}.reward-strip b{font:600 17px/1.3 'Oxanium',sans-serif;color:#ffce95}.reward-strip span{font-size:10px;line-height:1.5;color:#b9a99c}.reward-strip .claimed{color:#9ac888}.reward-hint{font-size:12px;line-height:1.6;color:#e9bb88;margin:12px 0}.share-reward{color:#ffc890;font-size:13px;line-height:1.6;margin-bottom:16px}.share-reward-status{font-size:12px;line-height:1.5;color:#b1dc93;min-height:18px}
+@media(max-width:520px){.reward-strip{grid-template-columns:1fr 1fr}.reward-strip>button{grid-column:1/-1}.reward-strip b{font-size:16px}}

@@ -1,7 +1,9 @@
+import {ensureSession} from './session.js';
 const $ = (id) => document.getElementById(id);
 let sort = 'newest', page = 0, generation = 0, ready = false;
 const toast = (message) => { $('toast').textContent = message; $('toast').hidden = false; clearTimeout(toast.timer); toast.timer = setTimeout(() => $('toast').hidden = true, 4500); };
 async function api(path, data) {
+  if (path !== 'presence') await ensureSession();
   const res = await fetch(`/api/${path}`, { method: data ? 'POST' : 'GET', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(12000) });
   const result = await res.json();
   if (!res.ok) throw new Error(result.error || 'Could not connect. Please try again.');
@@ -46,13 +48,14 @@ async function load(append = false) {
 }
 
 $('body').oninput = () => $('char-count').textContent = `${$('body').value.length} / 20,000`;
-$('comment-form').onsubmit = async e => { e.preventDefault(); if (!ready) return; $('post').disabled=true; try { const data=await api('create_post',{title:$('post-title').value.trim(),name:$('name').value.trim()||'Anonymous',body:$('body').value.trim(),requestId:crypto.randomUUID()}); location.assign(`/posts/${data.id}`); }catch(e){toast(e.message);$('post').disabled=false;} };
+let postRequest;
+$('comment-form').onsubmit = async e => { e.preventDefault(); if (!ready) return; $('post').disabled=true; try { const payload={title:$('post-title').value.trim(),name:$('name').value.trim()||'Anonymous',body:$('body').value.trim()};const signature=JSON.stringify(payload);if(postRequest?.signature!==signature)postRequest={signature,id:crypto.randomUUID()};const data=await api('create_post',{...payload,requestId:postRequest.id}); if(data.reward) {try{sessionStorage.setItem('community-earned','Post published · +$30,000,000 “ARR” added.');}catch{}} location.assign(`/posts/${data.id}`); }catch(e){toast(e.message);$('post').disabled=false;} };
 function updateSort() { document.querySelectorAll('[data-sort]').forEach(el => el.setAttribute('aria-pressed',String(el.dataset.sort === sort))); }
 document.querySelectorAll('[data-sort]').forEach(el => el.onclick = () => { sort = el.dataset.sort; updateSort(); load().catch(e => toast(e.message)); });
 $('load-more').onclick = () => load(true).catch(e => toast(e.message));
 async function refresh() { stats(await api('presence',{})); }
 async function connect() {
-  try { await refresh(); ready = true; $('post').disabled = false; await load(); }
+  try { stats(await ensureSession()); ready = true; $('post').disabled = false; await load(); }
   catch { $('connection-text').textContent = 'Connection unavailable. Please try again shortly.'; if (!$('comments').querySelector('article')) $('comments').textContent = 'The community is not connected yet. Please try again shortly.'; $('comments').classList.add('empty'); $('comments').setAttribute('aria-busy','false'); }
 }
 connect();

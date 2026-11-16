@@ -1,12 +1,13 @@
 import {renderForum, rpc} from './forum.js';
 const actions = {
+  reward_state: 'rewards', reward_share: 'rewards',
   posts: 'forum', post: 'forum', create_post: 'forum', reply: 'forum',
   presence: 'api', react: 'api', like: 'api',
   bubble_state: 'bubble', bubble_make: 'bubble', bubble_flush: 'bubble',
   bubble_buy_center: 'bubble', bubble_buy_workspace: 'bubble', bubble_buy_algorithm: 'bubble',
   bubble_buy_double: 'bubble', bubble_buy_auto: 'bubble', bubble_buy_bowl: 'bubble',
 };
-const reads = new Set(['posts', 'post', 'bubble_state']);
+const reads = new Set(['posts', 'post', 'bubble_state', 'reward_state']);
 const json = (body, status = 200) => Response.json(body, {status, headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export default {
   async fetch(request, env) {

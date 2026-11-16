@@ -35,3 +35,11 @@ A purchase first settles existing production at the old interval. Algorithm purc
 ## Pricing and visual revision
 
 Migration 009 raises only the DeepSeek base cost to $350,000 (still doubles each level); existing purchases remain intact. Apply once after 008. Workspace results use borderless floating Oxanium numbers with Space Mono labels, both self-hosted under SIL OFL. The blue DeepSeek silhouette is an SVG adapted from Lobe Icons (MIT).
+
+## Community rewards and progress direction — 2026-11-16
+
+Apply migration 010 once after 009. Sharing (copy succeeds or a platform button is clicked) credits $50M ARR once per anonymous visitor cookie on that domain. Opening the share dialog alone does not claim it. Each newly saved post credits $30M and reply $10M. Rewards add only spendable ARR, not lifetime sales or the global bubble. They are not retroactive. Database triggers and a unique reward ledger make content insertion and credit atomic; replayed writes do not earn again. Existing forum rate limits remain. Clearing cookies or using another browser/domain starts another anonymous identity; this is browser storage, not person-level verification.
+
+The game footer has three reward shortcuts; the composer shows its reward, and the share dialog shows available/claimed state. Home-page cash refreshes after a share claim. Post/reply success messages survive navigation. First-visit API requests share one identity bootstrap to avoid competing cookies. Unchanged form retries reuse their request ID.
+
+AI Bubble fills from its right edge toward the left, using the same underlying contribution ratio.

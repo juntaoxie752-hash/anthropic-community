@@ -1,3 +1,4 @@
+import {ensureSession} from './session.js';
 import {renderWorkforce, formatInterval} from './workforce.js';
 const $ = (id) => document.getElementById(id);
 async function api(path, data) {
@@ -322,6 +323,7 @@ async function act(action) {
 
 async function connect() {
   try {
+    await ensureSession();
     render(await api('bubble_state'));
     ready = true;
     $('game-status').textContent = DEFAULT_STATUS;
@@ -365,3 +367,11 @@ setInterval(async () => {
   catch { /* The next foreground poll retries; server balances remain authoritative. */ }
   finally { polling = false; }
 }, 250);
+
+// Read the authoritative balance after a share reward; invalidate earlier polls.
+document.addEventListener('reward-earned', async () => {
+ actionRevision += 1;
+ if (busy) {lastPoll=0;return;}
+ const revision=actionRevision;
+ try {const next=await api('bubble_state');if(!busy && actionRevision===revision)render(next);} catch {lastPoll=0;}
+});

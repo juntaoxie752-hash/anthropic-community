@@ -36,9 +36,9 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   window.Element.prototype.getAnimations=()=>[];
   window.Element.prototype.animate=function(frames){this.dataset.animated='true';return {onfinish:null};};
   const workforce=(await readFile(new URL('../public/workforce.js',import.meta.url),'utf8')).replaceAll('export ','');
-  const game=(await readFile(new URL('../public/game.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/,'');
+  const game=(await readFile(new URL('../public/game.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
   const context=vm.createContext({window,document:window.document,fetch:window.fetch,matchMedia:window.matchMedia,
-    setInterval:window.setInterval,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,crypto,BigInt,console,
+    ensureSession:async()=>({}),setInterval:window.setInterval,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,crypto,BigInt,console,
     AbortSignal,Element:window.Element,queueMicrotask,structuredClone});
   vm.runInContext(workforce+'\n'+game,context);
   await nextTurn();
