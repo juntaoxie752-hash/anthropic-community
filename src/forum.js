@@ -4,7 +4,7 @@ export const linkedText = value => String(value ?? '').split(/(https:\/\/[^\s<>"
 export const postPath = post => `/posts/${post.id}/${String(post.title).normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,75).replace(/-$/,'') || 'discussion'}`;
 export const origin = env => env.CANONICAL_ORIGIN || 'https://anthropicsucks.club';
 export async function rpc(env, service, action, payload={}, visitor='server', network='server') {
- const functions = {forum:'community_forum', api:'community_api', bubble:'community_bubble', rewards:'community_rewards', social:'community_social'};
+ const functions = {forum:'community_forum', api:'community_api', bubble:'community_bubble', rewards:'community_rewards', social:'community_social', clicker:'community_clicker'};
  const response = await fetch(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/${functions[service]}`, {
   method:'POST', headers:{'Content-Type':'application/json',apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`},
   body:JSON.stringify({action,visitor,network,payload}),signal:AbortSignal.timeout(10000)

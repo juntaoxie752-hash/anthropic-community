@@ -13,6 +13,8 @@ test('shared wall persists reactions, sorts comments, and deduplicates likes', a
   assert.equal((await call('react',{requestId:id})).reactions,1);
   await call('comment',{requestId:crypto.randomUUID(),name:'First',body:'First comment'});
   await call('comment',{requestId:crypto.randomUUID(),name:'Second',body:'Second comment'});
+  // Give the sorting fixture distinct timestamps even on a fast local database.
+  await db.exec("update community.comments set created_at=now()-interval '1 minute' where name='First'");
   const newest = await call('comments',{sort:'newest',page:0});
   assert.equal(newest.items[0].name,'Second');
   const first = newest.items[1].id;

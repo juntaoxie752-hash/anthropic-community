@@ -4,11 +4,13 @@
   "main": "src/worker.js",
   "workers_dev": true,
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/", "/posts", "/posts/*", "/robots.txt", "/sitemap*"] },
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/", "/index.html", "/posts", "/posts/*", "/robots.txt", "/sitemap*"] },
   "vars": { "CANONICAL_ORIGIN": "https://anthropicsucks.club" },
   "routes": [
     { "pattern": "anthropicsucks.club", "custom_domain": true },
     { "pattern": "fuckanthropic.club", "custom_domain": true }
   ],
+  "durable_objects": {"bindings":[{"name":"CLICKER_ROOM","class_name":"ClickerRoom"}]},
+  "migrations":[{"tag":"clicker-v1","new_sqlite_classes":["ClickerRoom"]}],
   "observability": { "enabled": true }
 }

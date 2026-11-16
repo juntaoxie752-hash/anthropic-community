@@ -6,18 +6,20 @@ export function shareIntent(channel,url,message,ios=false) {
  return {x:`https://x.com/intent/post?url=${link}&text=${text}`,whatsapp:`https://wa.me/?text=${combined}`,telegram:`https://t.me/share/url?url=${link}&text=${text}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${link}`,reddit:`https://www.reddit.com/submit?url=${link}&title=${text}`,messages:`sms:${ios?'&':'?'}body=${combined}`,email:`mailto:?subject=${encodeURIComponent('Anthropic Sucks')}&body=${combined}`,line:`https://social-plugins.line.me/lineit/share?url=${link}&text=${text}`,linkedin:`https://www.linkedin.com/sharing/share-offsite/?url=${link}`}[channel];
 }
 let active;
+const simpleClicker=typeof document!=='undefined' && document.body.hasAttribute('data-clicker');
 function openShare(trigger) {
  active?.close();
  const url=new URL(location.pathname,location.origin).href;
  const postTitle=document.querySelector('.thread-post h1')?.textContent;
- const message=postTitle?`${postTitle} — join the discussion on Anthropic Sucks.`:'Fuck Anthropic. Burst the AI bubble. AI must not be controlled by evil companies.';
+ const message=simpleClicker?'Anthropic, fuck you! Join the global clicker.':postTitle?`${postTitle} — join the discussion on Anthropic Sucks.`:'Fuck Anthropic. Burst the AI bubble. AI must not be controlled by evil companies.';
  const dialog=document.createElement('dialog');dialog.className='share-sheet';dialog.setAttribute('aria-labelledby','share-title');
  dialog.innerHTML=`<button class="share-close" aria-label="Close share dialog">×</button><h2 id="share-title">Share the frustration.</h2><p class="share-subtitle">A shared wall. A louder voice.</p><p class="share-reward" data-share-reward>First share +$50K</p><p class="share-reward-status" role="status"></p><label for="share-message">Say it your way</label><textarea id="share-message" maxlength="280" rows="3"></textarea><div class="share-platforms" role="group" aria-label="Share options">${channels.map(([key,label])=>`<button class="share-option" data-channel="${key}"><span class="share-icon" style="background:${MARK[key][0]||'#302b28'}"><svg viewBox="0 0 24 24" aria-hidden="true">${MARK[key][1]}</svg></span><span>${label}</span></button>`).join('')}</div><p class="share-hint">Facebook and LinkedIn share the link. Copy your message to add it there.</p><div class="share-link-row"><input aria-label="Share link" readonly><button class="share-copy-link">Copy link <small class="credit-bonus" data-share-bonus title="One-time share credits">+$50K</small></button></div><button class="share-copy-message">Copy message + link <small class="credit-bonus" data-share-bonus title="One-time share credits">+$50K</small></button><p class="share-status" role="status" aria-live="polite"></p>`;
  document.body.append(dialog);active=dialog;
  const field=dialog.querySelector('input'),messageField=dialog.querySelector('textarea'),status=dialog.querySelector('.share-status');field.value=url;messageField.value=message;
  const notify=text=>{status.textContent=text;};
- rewardState().catch(()=>{});
- const reward=()=>claimShareReward().then(data=>{
+ if(simpleClicker){dialog.querySelector('.share-subtitle').textContent='One shared counter. Everyone clicking together.';dialog.querySelectorAll('.share-reward,.share-reward-status,.credit-bonus').forEach(el=>el.remove());}
+ else rewardState().catch(()=>{});
+ const reward=()=>simpleClicker ? Promise.resolve() : claimShareReward().then(data=>{
   dialog.querySelector('.share-reward-status').textContent=data.reward ? '+$50,000,000 “ARR” added to your balance.' : 'Your one-time share reward has already been claimed.';
  }).catch(error=>{dialog.querySelector('.share-reward-status').textContent=error.message;});
  async function copy(text,label) {try{await navigator.clipboard.writeText(text);notify(label);void reward();}catch{messageField.focus();messageField.select();notify('Copy using your device’s copy command. The link is shown below.');}}

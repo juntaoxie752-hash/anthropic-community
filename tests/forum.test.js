@@ -26,7 +26,7 @@ test('forum migration preserves posts; replies, SEO routes, moderation and permi
    return Response.json((await db.query(`select public.${fn}($1,$2,$3,$4::jsonb) as result`,[action,visitor,network,JSON.stringify(payload)])).rows[0].result);
   };
   const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test',VISITOR_SECRET:'test',ASSETS:{fetch:async()=>new Response(await readFile(new URL('../public/index.html',import.meta.url),'utf8'))}};
-  const get=path=>worker.fetch(new Request('https://fuckanthropic.club'+path),env);
+  const get=path=>worker.fetch(new Request('https://anthropicsucks.club'+path),env);
   const path=postPath(data.post);
   assert.equal((await get('/posts/'+id)).status,301);
   let res=await get(path);assert.equal(res.status,200);const html=await res.text();

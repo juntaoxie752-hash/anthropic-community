@@ -1,5 +1,9 @@
 # Anthropic community
 
+> 2026-11-16 域名分版：`fuckanthropic.club` 为独立实时点击页（手势动画、音效、全球计数、在线人数、连击、长按和 Share）；`anthropicsucks.club` 保留 AI Bubble 游戏与论坛。旧 fuckanthropic 帖子链接永久跳转到 anthropicsucks 对应路径。
+> 新版计数使用隔离的 clicker 表，未重置现有玩家或论坛数据。迁移 `025_clicker.sql` 已执行一次，不要重复执行。WebSocket 通过 Cloudflare Durable Object 广播，Supabase 持久化；HTTP 备用请求也广播到房间。
+> 本版部署 `0f3b4615-90bc-45c6-9eb1-7dd7acec5f2c`：29 项测试通过；手机与桌面布局、长按、分享、两个独立会话的实时同步、HTTP 广播和帖子跳转均验证通过。以下为历史记录。
+
 > 2026-11-16：泡沫游戏已上线，最新生产商店规则与迁移见 [Production upgrades](docs/production-upgrades.md)。以下旧状态说明为历史记录。
 
 > 项目接手入口：[项目全量上下文与新游戏规划](docs/project-context-and-game-plan.md)。新版游戏目前只做方案，旧游戏已撤下；本文件下方包含历史发布记录，请以接手文档的状态区分为准。
