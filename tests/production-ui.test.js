@@ -133,6 +133,13 @@ test('production UI renders purchases, capacity-aware rolls, effects, interval l
   assert.match(q('buy-double').textContent,/2.5× sale value/);
   assert.match(q('buy-double').textContent,/Next hire adds \+0.25×/);
   assert.match(q('flush-note').textContent,/\$175/);
+  // Sale bursts stay bounded during rapid sales and distinguish full-bowl bonuses.
+  vm.runInContext("saleCelebration('50000000', true)",context);
+  assert.equal(window.document.querySelector('.sale-celebration:last-child .sale-cash strong').textContent,'+$50M');
+  assert.match(window.document.querySelector('.sale-celebration:last-child small').textContent,/5× BONUS/);
+  for(let i=0;i<5;i++)vm.runInContext("saleCelebration('70', false)",context);
+  assert.equal(window.document.querySelectorAll('.sale-celebration').length,2);
+  assert.equal(window.document.querySelectorAll('.sale-coin').length,24);
   // A background read arriving after a purchase must not revert the owned count.
   pendingRead=structuredClone(data);
   const poll=intervals.find(({delay})=>delay===250).fn;

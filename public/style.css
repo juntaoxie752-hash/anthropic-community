@@ -354,3 +354,14 @@ h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(30px,9.1vw,156px);font
 @media(max-width:700px){
  .toilet-readout{top:99px}.toilet-button{height:99px}.toilet{max-height:99px}.funding-status{bottom:0;font-size:8px;gap:2px}.funding-status strong{padding:1px 4px}
 }
+
+/* Confirmed sale: gold shockwave, bounded coin shower and a readable cash burst. */
+.sale-celebration{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden;contain:strict}
+.sale-cash{position:absolute;display:flex;flex-direction:column;align-items:center;gap:5px;transform:translate(-50%,-50%);width:220px;text-align:center;color:#ffe99a;filter:drop-shadow(0 4px 4px #130a00);font-family:'Oxanium',sans-serif}
+.sale-cash small{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#fff0c4;background:#33200de8;border:1px solid #c89343;border-radius:99px;padding:5px 9px;white-space:nowrap}
+.sale-cash strong{font-size:clamp(36px,6vw,56px);font-weight:800;line-height:1.1;letter-spacing:-.05em;text-shadow:0 2px 0 #9a541e,0 0 28px #ffbc5590}
+.is-jackpot .sale-cash strong{color:#fff5b5;font-size:clamp(42px,7vw,66px)}
+.sale-glow{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,#fff0ab88,#ffae263d 38%,transparent 70%)}
+.sale-ring{position:absolute;width:150px;height:150px;border:2px solid #ffd371;border-radius:50%;box-shadow:0 0 20px #f6b84166,inset 0 0 16px #f6b84133}
+.sale-coin{position:absolute;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid #ffe7a2;background:linear-gradient(135deg,#fff1a6,#eaa02e);color:#80500c;font:bold 14px 'Oxanium',sans-serif;box-shadow:0 0 10px #ffc65866;font-style:normal;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.sale-cash{filter:none}.sale-cash strong{text-shadow:0 2px 3px #000}}
