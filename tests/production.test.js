@@ -151,3 +151,32 @@ test('fictional world shock deducts $1T exactly once and preserves players and f
   await db.exec(sql);s=await call('bubble_state');assert.equal(s.world.contributed,0);assert.equal(s.world.event.loss,100);
  } finally {await db.close();}
 });
+
+
+test('higher funding prices preserve owned rounds, charge quoted prices once and retain capacity growth', async () => {
+ const {db,call}=await setup();
+ try {
+  await call('bubble_state');
+  await db.exec("update community.bubble_players set arr=1000000000 where visitor='factory'");
+  let s=await call('bubble_buy_bowl');
+  const cash=s.player.arr;
+  await db.exec(await readFile(new URL('../supabase/012_datacenter_event.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../supabase/015_funding_prices.sql',import.meta.url),'utf8'));
+  s=await call('bubble_state');
+  assert.equal(s.player.arr,cash);assert.equal(s.player.roundFunding,3500);assert.equal(s.player.fundingRound,1);
+  assert.equal((await call('bubble_state',{},'new-player')).shop.fundingCost,3500);
+  for(const [i,price] of [140000,1120000,17920000,573440000].entries()) {
+   assert.equal(s.shop.fundingCost,price);
+   const before=s.player.arr, id=crypto.randomUUID();
+   s=await call('bubble_buy_bowl',{requestId:id});
+   assert.equal(s.player.arr,before-price);assert.equal(s.player.roundFunding,price);
+   assert.equal(s.player.capacity,10**(i+3));
+   const saved=s.player.arr;
+   s=await call('bubble_buy_bowl',{requestId:id});assert.equal(s.player.arr,saved);
+  }
+  assert.equal(s.shop.fundingCost,null);
+  await assert.rejects(call('bubble_buy_bowl'),/already raised/);
+  await db.exec("update community.bubble_players set funding_round=1,arr=139999 where visitor='new-player'");
+  await assert.rejects(call('bubble_buy_bowl',{},'new-player'),/Not enough ARR/);
+ }finally{await db.close();}
+});
