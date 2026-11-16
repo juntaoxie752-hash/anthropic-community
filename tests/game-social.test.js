@@ -46,6 +46,15 @@ test('board ranks sales, hides identity, saves names and archives immutable even
   await db.exec("update community.bubble_players set arr=123 where visitor='leader-12'");
   await db.exec(eventSql);assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-12'")).rows[0].arr,123);
   assert.equal((await call('bubble_events')).items.filter(e=>e.id==='binance-hack-2026-11-16').length,1);
+  // Restore only exclusions below $100B, retaining an audit record and all assets.
+  await db.exec("update community.bubble_players set contributed=100000000000 where visitor='leader-12'");
+  const restore=await readFile(new URL('../supabase/024_restore_board.sql',import.meta.url),'utf8');
+  await db.exec(restore);
+  assert.equal((await call('bubble_board',{},'leader-11')).me.excluded,false);
+  assert.equal((await call('bubble_board',{},'leader-12')).me.excluded,true);
+  assert.equal((await db.query('select count(*)::int n from community.bubble_board_exclusions where restored_at is not null')).rows[0].n,9);
+  assert.equal((await db.query("select arr from community.bubble_players where visitor='leader-12'")).rows[0].arr,123);
+  await db.exec(restore);assert.equal((await call('bubble_board',{},'leader-11')).me.excluded,false);
   await db.exec('set role anon');await assert.rejects(call('bubble_board'));await assert.rejects(db.query('select * from community.bubble_events'));
  }finally{await db.close();}
 });
